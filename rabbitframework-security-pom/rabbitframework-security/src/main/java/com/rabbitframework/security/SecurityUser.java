@@ -3,14 +3,14 @@ package com.rabbitframework.security;
 public class SecurityUser implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private String userName;
-	private int userId;
+	private String userId;
 	private String loginName;
 
 	public SecurityUser() {
 
 	}
 
-	public SecurityUser(int userId, String loginName) {
+	public SecurityUser(String userId, String loginName) {
 		this.userId = userId;
 		this.loginName = loginName;
 	}
@@ -23,11 +23,11 @@ public class SecurityUser implements java.io.Serializable {
 		this.userName = userName;
 	}
 
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 

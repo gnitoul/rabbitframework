@@ -104,7 +104,7 @@ import com.rabbitframework.security.web.servlet.AbstractSecurityFilter;
  * benefit from this convenience, your filter implementation should subclass one
  * of the 3 mentioned earlier.
  *
- * @see org.springframework.web.filter.DelegatingFilterProxy
+ * see org.springframework.web.filter.DelegatingFilterProxy
  *      DelegatingFilterProxy
  * @since 1.0
  */
@@ -407,7 +407,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 * @return <code>{@link org.apache.shiro.web.servlet.AbstractShiroFilter}.class</code>
 	 */
 	public Class getObjectType() {
-		return SpringShiroFilter.class;
+		return SpringSecurityFilter.class;
 	}
 
 	/**
@@ -518,7 +518,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 		// here - we're just using it because it is a concrete
 		// AbstractShiroFilter instance that accepts
 		// injection of the SecurityManager and FilterChainResolver:
-		return new SpringShiroFilter((WebSecurityManager) securityManager,
+		return new SpringSecurityFilter((WebSecurityManager) securityManager,
 				chainResolver);
 	}
 
@@ -611,9 +611,9 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 * properties explicitly. We do that in a simple concrete subclass in the
 	 * constructor.
 	 */
-	private static final class SpringShiroFilter extends AbstractSecurityFilter {
+	private static final class SpringSecurityFilter extends AbstractSecurityFilter {
 
-		protected SpringShiroFilter(WebSecurityManager webSecurityManager,
+		protected SpringSecurityFilter(WebSecurityManager webSecurityManager,
 				FilterChainResolver resolver) {
 			super();
 			if (webSecurityManager == null) {
