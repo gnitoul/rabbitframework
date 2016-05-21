@@ -10,10 +10,9 @@
 	<jdbcConnection driverClass="${jdbc.driverClassName}" catalog="" connectionURL="${jdbc.url}" userName="${jdbc.username}" password="${jdbc.password}">
 	    	<!--<property name="other" value="demo"/>-->
 	</jdbcConnection>
-   
-   <generators>
-        <generator templatePath="template/model.ftl" targetPackage="com.test" targetProject="genpath" 			fileSuffix="" extension=".java"/>
-    </generators> 
+    <generators>
+        <generator templatePath="template/model.ftl" targetPackage="com.test" targetProject="genpath" fileSuffix="" extension=".java"/>
+    </generators>
     <!--type分为：all:所有表，assign:指定表名,
     逻辑说明：
     1、如果类型为all，将不再解析以下的table元素
@@ -23,3 +22,4 @@
     	<table tableName="rabbit_role" objectName="RabbitRole"/>
 	</tables>
 </configuration>
+```
