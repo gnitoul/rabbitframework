@@ -8,14 +8,17 @@
     1、升级fastjson版本到1.2.11。
     2、新增rabbitframework-generator框架,主要用于代码生成。
 
-    3、jadb1.1.2版本修改说明：
+    3、jadb版本修改说明：
         A、修改数据库方言,改成配置方案。
 
-    4、rabbitframework-generator框架用于代码生成
+    4、generator框架用于代码生成
         A、代码含有基本类型的生成方式，由原来生成对象改为直接生成基本类型。
         B、修复model代码生成的方法中，方法名称与属性字段不匹配的问题。
         C、去掉dataSource连接，改为直接jdbc连接。
 
-    5、security1.1.2修改说明：
-        1、重新引用shiro源文件,本框架只对shrio进行扩展。
-        2、新增SecurityAuthorizingRealm类,修改realm的缓存key的机制。
+    5、security修改说明：
+        A、重新引用shiro源文件,本框架只对shrio进行扩展。
+        B、新增SecurityAuthorizingRealm类,修改realm的缓存key的机制。
+
+    6、commons修改说明：
+        A、新增JsonUtils公共类,依赖于fastJson包
