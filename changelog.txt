@@ -19,6 +19,7 @@
     5、security修改说明：
         A、重新引用shiro源文件,本框架只对shrio进行扩展。
         B、新增SecurityAuthorizingRealm类,修改realm的缓存key的机制。
+        C、修改每次从session中获取数据时,将session存入本地缓存中，解决频繁从缓存中读取数据的问题。
 
     6、commons修改说明：
         A、新增JsonUtils公共类,依赖于fastJson包

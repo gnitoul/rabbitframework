@@ -107,8 +107,8 @@ public abstract class AbstractNativeSessionManager extends AbstractSessionManage
         }
         return doGetSession(key);
     }
-
-    private Session lookupRequiredSession(SessionKey key) throws SessionException {
+    //将private改成protected
+    protected Session lookupRequiredSession(SessionKey key) throws SessionException {
         Session session = lookupSession(key);
         if (session == null) {
             String msg = "Unable to locate required Session instance based on SessionKey [" + key + "].";

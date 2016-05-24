@@ -28,10 +28,9 @@ import org.apache.shiro.web.util.SavedRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleSessionManager extends AbstractValidatingSessionManager
-		implements CacheManagerAware {
-	private static final Logger log = LoggerFactory
-			.getLogger(SimpleSessionManager.class);
+public class SimpleSessionManager extends AbstractValidatingSessionManager implements CacheManagerAware {
+	private static final Logger log = LoggerFactory.getLogger(SimpleSessionManager.class);
+
 	private SessionFactory sessionFactory;
 	private CacheManager cacheManager;
 	private boolean deleteInvalidSessions;
@@ -66,25 +65,34 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager
 	}
 
 	@Override
-	public void setAttribute(SessionKey sessionKey, Object attributeKey,
-			Object value) throws InvalidSessionException {
+	public Object getAttribute(SessionKey sessionKey, Object attributeKey) throws InvalidSessionException {
+		Session session = (Session) ThreadContext.get(ThreadContext.SESSION_KEY);
+		if (session == null) {
+			log.debug("session is null in ThreadLocal");
+			session = lookupRequiredSession(sessionKey);
+			if (session != null) {
+				ThreadContext.put(ThreadContext.SESSION_KEY, session);
+			}
+		}
+		return session.getAttribute(attributeKey);
+	}
+
+	@Override
+	public void setAttribute(SessionKey sessionKey, Object attributeKey, Object value) throws InvalidSessionException {
 		try {
 			super.setAttribute(sessionKey, attributeKey, value);
 		} catch (UnknownSessionException e) {
 			Subject subject = ThreadContext.getSubject();
-			if (value instanceof PrincipalCollection && sessionDAO != null
-					&& subject != null
+			if (value instanceof PrincipalCollection && sessionDAO != null && subject != null
 					&& (subject instanceof DelegatingSubject)) {
 				try {
 					String host = ((DelegatingSubject) subject).getHost();
 					SessionContext sessionContext = createSessionContext(host);
-					SimpleSession session = (SimpleSession) getSessionFactory()
-							.createSession(sessionContext);
+					SimpleSession session = (SimpleSession) getSessionFactory().createSession(sessionContext);
 					session.setId(sessionKey.getSessionId());
 					session.setAttribute(attributeKey, value);
 					if (sessionDAO instanceof AbstractRabbitSessionDAO) {
-						((AbstractRabbitSessionDAO) sessionDAO)
-								.initCreate(session);
+						((AbstractRabbitSessionDAO) sessionDAO).initCreate(session);
 					} else {
 						sessionDAO.update(session);
 					}
@@ -125,7 +133,8 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager
 	 * they are discovered to be invalid, {@code false} if invalid sessions will
 	 * be manually deleted by some process external to Shiro's control. The
 	 * default is {@code true} to ensure no orphans exist in the underlying data
-	 * store. <h4>Usage</h4> It is ok to set this to {@code false} <b>
+	 * store.
+	 * <h4>Usage</h4> It is ok to set this to {@code false} <b>
 	 * <em>ONLY</em></b> if you have some other process that you manage yourself
 	 * that periodically deletes invalid sessions from the backing data store
 	 * over time, such as via a Quartz or Cron job. If you do not do this, the
@@ -152,10 +161,10 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager
 	/**
 	 * Sets whether or not sessions should be automatically deleted after they
 	 * are discovered to be invalid. Default value is {@code true} to ensure no
-	 * orphans will exist in the underlying data store. <h4>WARNING</h4> Only
-	 * set this value to {@code false} if you are manually going to delete
-	 * sessions yourself by some process (quartz, cron, etc) external to Shiro's
-	 * control. See the {@link #isDeleteInvalidSessions()
+	 * orphans will exist in the underlying data store.
+	 * <h4>WARNING</h4> Only set this value to {@code false} if you are manually
+	 * going to delete sessions yourself by some process (quartz, cron, etc)
+	 * external to Shiro's control. See the {@link #isDeleteInvalidSessions()
 	 * isDeleteInvalidSessions()} JavaDoc for more.
 	 *
 	 * @param deleteInvalidSessions
@@ -186,10 +195,8 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager
 	 * @since 1.0
 	 */
 	private void applyCacheManagerToSessionDAO() {
-		if (this.cacheManager != null && this.sessionDAO != null
-				&& this.sessionDAO instanceof CacheManagerAware) {
-			((CacheManagerAware) this.sessionDAO)
-					.setCacheManager(this.cacheManager);
+		if (this.cacheManager != null && this.sessionDAO != null && this.sessionDAO instanceof CacheManagerAware) {
+			((CacheManagerAware) this.sessionDAO).setCacheManager(this.cacheManager);
 		}
 	}
 
@@ -208,16 +215,17 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager
 
 	/**
 	 * Persists the given session instance to an underlying EIS (Enterprise
-	 * Information System). This implementation delegates and calls
-	 * <code>this.{@link SessionDAO sessionDAO}.{@link SessionDAO#create(org.apache.shiro.session.Session) create}(session);<code>
+	 * Information System). This implementation delegates and calls <code>this.
+	 * {@link SessionDAO sessionDAO}.
+	 * {@link SessionDAO#create(org.apache.shiro.session.Session) create}
+	 * (session);<code>
 	 *
 	 * @param session
 	 *            the Session instance to persist to the underlying EIS.
 	 */
 	protected void create(Session session) {
 		if (log.isDebugEnabled()) {
-			log.debug("Creating new EIS record for new session instance ["
-					+ session + "]");
+			log.debug("Creating new EIS record for new session instance [" + session + "]");
 		}
 		sessionDAO.create(session);
 	}
@@ -257,13 +265,11 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager
 		sessionDAO.update(session);
 	}
 
-	protected Session retrieveSession(SessionKey sessionKey)
-			throws UnknownSessionException {
+	protected Session retrieveSession(SessionKey sessionKey) throws UnknownSessionException {
 		Serializable sessionId = getSessionId(sessionKey);
 		if (sessionId == null) {
-			log.debug(
-					"Unable to resolve session ID from SessionKey [{}].  Returning null to indicate a "
-							+ "session could not be found.", sessionKey);
+			log.debug("Unable to resolve session ID from SessionKey [{}].  Returning null to indicate a "
+					+ "session could not be found.", sessionKey);
 			return null;
 		}
 		Session s = retrieveSessionFromDataSource(sessionId);
@@ -280,8 +286,7 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager
 		return sessionKey.getSessionId();
 	}
 
-	protected Session retrieveSessionFromDataSource(Serializable sessionId)
-			throws UnknownSessionException {
+	protected Session retrieveSessionFromDataSource(Serializable sessionId) throws UnknownSessionException {
 		return sessionDAO.readSession(sessionId);
 	}
 
