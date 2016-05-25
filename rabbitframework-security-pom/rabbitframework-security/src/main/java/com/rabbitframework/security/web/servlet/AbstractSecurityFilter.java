@@ -14,6 +14,9 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.ExecutionException;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.AntPathMatcher;
+import org.apache.shiro.util.PatternMatcher;
+import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.mgt.FilterChainResolver;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.mgt.WebSecurityManager;
@@ -22,16 +25,16 @@ import org.apache.shiro.web.servlet.OncePerRequestFilter;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.servlet.ShiroHttpServletResponse;
 import org.apache.shiro.web.subject.WebSubject;
+import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractSecurityFilter extends OncePerRequestFilter {
-
-	private static final Logger log = LoggerFactory
-			.getLogger(AbstractShiroFilter.class);
+	private static final Logger log = LoggerFactory.getLogger(AbstractShiroFilter.class);
 
 	private static final String STATIC_INIT_PARAM_NAME = "staticSecurityManagerEnabled";
-
+	private PatternMatcher pathMatcher = new AntPathMatcher();
+	private String filterUrl = "";
 	private WebSecurityManager securityManager;
 
 	private FilterChainResolver filterChainResolver;
@@ -284,15 +287,30 @@ public abstract class AbstractSecurityFilter extends OncePerRequestFilter {
 					servletRequest, servletResponse, chain);
 			final ServletResponse response = prepareServletResponse(request,
 					servletResponse, chain);
-			final Subject subject = createSubject(request, response);
-			// noinspection unchecked
-			subject.execute(new Callable() {
-				public Object call() throws Exception {
-					updateSessionLastAccessTime(request, response);
-					executeChain(request, response, chain);
-					return null;
+			boolean filter = true;
+			if (StringUtils.hasLength(filterUrl)) {
+				String[] filterUrls = filterUrl.split(",");
+				int length = filterUrls.length;
+				for (int i = 0; i < length; i++) {
+					String url = filterUrls[i];
+					if (pathsMatch(url, servletRequest)) {
+						filter = false;
+						executeChain(request, response, chain);
+						break;
+					}
 				}
-			});
+			}
+			if (filter) {
+				final Subject subject = createSubject(request, response);
+				// noinspection unchecked
+				subject.execute(new Callable() {
+					public Object call() throws Exception {
+						updateSessionLastAccessTime(request, response);
+						executeChain(request, response, chain);
+						return null;
+					}
+				});
+			}
 		} catch (ExecutionException ex) {
 			t = ex.getCause();
 		} catch (Throwable throwable) {
@@ -311,6 +329,22 @@ public abstract class AbstractSecurityFilter extends OncePerRequestFilter {
 			String msg = "Filtered request failed.";
 			throw new ServletException(msg, t);
 		}
+	}
+
+	protected boolean pathsMatch(String path, ServletRequest request) {
+		String requestURI = getPathWithinApplication(request);
+		log.trace(
+				"Attempting to match pattern '{}' with current requestURI '{}'...",
+				path, requestURI);
+		return pathsMatch(path, requestURI);
+	}
+
+	protected boolean pathsMatch(String pattern, String path) {
+		return pathMatcher.matches(pattern, path);
+	}
+
+	protected String getPathWithinApplication(ServletRequest request) {
+		return WebUtils.getPathWithinApplication(WebUtils.toHttp(request));
 	}
 
 	protected FilterChain getExecutionChain(ServletRequest request,
@@ -332,6 +366,14 @@ public abstract class AbstractSecurityFilter extends OncePerRequestFilter {
 		}
 
 		return chain;
+	}
+
+	public String getFilterUrl() {
+		return filterUrl;
+	}
+
+	public void setFilterUrl(String filterUrl) {
+		this.filterUrl = filterUrl;
 	}
 
 	protected void executeChain(ServletRequest request,

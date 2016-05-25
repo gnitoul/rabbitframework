@@ -105,7 +105,8 @@ import com.rabbitframework.security.web.servlet.AbstractSecurityFilter;
  * of the 3 mentioned earlier.
  *
  * see org.springframework.web.filter.DelegatingFilterProxy
- *      DelegatingFilterProxy
+ * DelegatingFilterProxy
+ * 
  * @since 1.0
  */
 public class SecurityFilterFactoryBean implements FactoryBean,
@@ -123,7 +124,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	private String loginUrl;
 	private String successUrl;
 	private String unauthorizedUrl;
-
+	private String filterUrl;
 	private AbstractSecurityFilter instance;
 
 	public SecurityFilterFactoryBean() {
@@ -169,6 +170,14 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 */
 	public String getLoginUrl() {
 		return loginUrl;
+	}
+
+	public void setFilterUrl(String filterUrl) {
+		this.filterUrl = filterUrl;
+	}
+
+	public String getFilterUrl() {
+		return filterUrl;
 	}
 
 	/**
@@ -519,7 +528,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 		// AbstractShiroFilter instance that accepts
 		// injection of the SecurityManager and FilterChainResolver:
 		return new SpringSecurityFilter((WebSecurityManager) securityManager,
-				chainResolver);
+				chainResolver,filterUrl);
 	}
 
 	private void applyLoginUrlIfNecessary(Filter filter) {
@@ -611,15 +620,17 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 * properties explicitly. We do that in a simple concrete subclass in the
 	 * constructor.
 	 */
-	private static final class SpringSecurityFilter extends AbstractSecurityFilter {
+	private static final class SpringSecurityFilter extends
+			AbstractSecurityFilter {
 
 		protected SpringSecurityFilter(WebSecurityManager webSecurityManager,
-				FilterChainResolver resolver) {
+				FilterChainResolver resolver,String furl) {
 			super();
 			if (webSecurityManager == null) {
 				throw new IllegalArgumentException(
 						"WebSecurityManager property cannot be null.");
 			}
+			setFilterUrl(furl);
 			setSecurityManager(webSecurityManager);
 			if (resolver != null) {
 				setFilterChainResolver(resolver);
