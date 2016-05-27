@@ -52,8 +52,6 @@ public abstract class ThreadContext {
 
     public static final String SECURITY_MANAGER_KEY = ThreadContext.class.getName() + "_SECURITY_MANAGER_KEY";
     public static final String SUBJECT_KEY = ThreadContext.class.getName() + "_SUBJECT_KEY";
-    public static String SESSION_KEY = ThreadContext.class + "_SESSION_KEY";
-
     private static final ThreadLocal<Map<Object, Object>> resources = new InheritableThreadLocalMap<Map<Object, Object>>();
 
     /**

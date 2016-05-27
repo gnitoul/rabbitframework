@@ -375,6 +375,7 @@ public class DelegatingSubject implements Subject {
 
     private void sessionStopped() {
         this.session = null;
+        
     }
 
     public <V> V execute(Callable<V> callable) throws ExecutionException {

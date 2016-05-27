@@ -29,8 +29,11 @@ import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.rabbitframework.security.web.session.mgt.SessionThreadContext;
+
 public abstract class AbstractSecurityFilter extends OncePerRequestFilter {
-	private static final Logger log = LoggerFactory.getLogger(AbstractShiroFilter.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(AbstractShiroFilter.class);
 
 	private static final String STATIC_INIT_PARAM_NAME = "staticSecurityManagerEnabled";
 	private PatternMatcher pathMatcher = new AntPathMatcher();
@@ -315,6 +318,9 @@ public abstract class AbstractSecurityFilter extends OncePerRequestFilter {
 			t = ex.getCause();
 		} catch (Throwable throwable) {
 			t = throwable;
+		} finally {
+			log.debug("remove local thread session");
+			SessionThreadContext.remove();
 		}
 
 		if (t != null) {
