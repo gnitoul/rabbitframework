@@ -1,7 +1,9 @@
 package com.rabbitframework.jadb.mapping.param;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库参数组合实例类 提供对数据库条件解析的接口 oredCriteria条件集体合，一般情况下使用createCriteria()方法
@@ -12,13 +14,29 @@ import java.util.List;
 public class WhereParamType {
 
 	protected List<Criteria> oredCriteria;
+	protected Map<String, Object> params;
 
 	public WhereParamType() {
 		oredCriteria = new ArrayList<Criteria>();
+		params = new HashMap<String, Object>();
 	}
 
 	public List<Criteria> getOredCriteria() {
 		return oredCriteria;
+	}
+
+	public Map<String, Object> getParams() {
+		return params;
+	}
+
+	public void setParams(Map<String, Object> params) {
+		if (params != null && params.size() > 0) {
+			this.params.putAll(params);
+		}
+	}
+
+	public void put(String key, String value) {
+		params.put(key, value);
 	}
 
 	/**
