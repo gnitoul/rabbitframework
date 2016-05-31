@@ -55,6 +55,12 @@ public class RabbitSecurityUtils {
         token.setRememberMe(isRemeberMe);
         // subject理解成权限对象。类似user
         Subject subject = SecurityUtils.getSubject();
+
+        //如果当前已登陆,先退出登陆
+        SecurityUser securityUser = getSecurityUser();
+        if (securityUser != null) {
+            logout();
+        }
         try {
             subject.login(token);
         } catch (Exception ex) {
