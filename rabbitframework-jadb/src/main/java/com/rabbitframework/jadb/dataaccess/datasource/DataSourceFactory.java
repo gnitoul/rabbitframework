@@ -14,7 +14,7 @@ public interface DataSourceFactory {
 	 * 添加数据源
 	 *
 	 * @param key
-	 * @param dataSource
+	 * @param dataSourceBean
 	 */
 	void addDataSource(String key, DataSourceBean dataSourceBean);
 
