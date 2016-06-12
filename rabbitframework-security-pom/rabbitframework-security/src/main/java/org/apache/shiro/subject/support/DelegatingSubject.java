@@ -339,7 +339,7 @@ public class DelegatingSubject implements Subject {
         return this.session;
     }
 
-    protected SessionContext createSessionContext() {
+    public SessionContext createSessionContext() {
         SessionContext sessionContext = new DefaultSessionContext();
         if (StringUtils.hasText(host)) {
             sessionContext.setHost(host);

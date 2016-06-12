@@ -90,7 +90,7 @@ public class WebDelegatingSubject extends DelegatingSubject implements WebSubjec
     }
 
     @Override
-    protected SessionContext createSessionContext() {
+    public SessionContext createSessionContext() {
         WebSessionContext wsc = new DefaultWebSessionContext();
         String host = getHost();
         if (StringUtils.hasText(host)) {

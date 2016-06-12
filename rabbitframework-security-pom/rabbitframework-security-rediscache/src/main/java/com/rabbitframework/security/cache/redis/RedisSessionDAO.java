@@ -12,10 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import com.rabbitframework.security.web.session.mgt.AbstractRabbitSessionDAO;
 
-public class RedisSessionDAO extends AbstractRabbitSessionDAO implements
-		CacheManagerAware {
-	private static Logger logger = LoggerFactory
-			.getLogger(RedisSessionDAO.class);
+public class RedisSessionDAO extends AbstractRabbitSessionDAO implements CacheManagerAware {
+	private static Logger logger = LoggerFactory.getLogger(RedisSessionDAO.class);
 	public static final String ACTIVE_SESSION_CACHE_NAME = "security-activeSessionCache";
 	private CacheManager cacheManager;
 	private String keyPrefix = "session:";
@@ -76,11 +74,6 @@ public class RedisSessionDAO extends AbstractRabbitSessionDAO implements
 
 	@Override
 	public void doUpdate(Session session) throws UnknownSessionException {
-		doSave(session);
-	}
-
-	@Override
-	public void initCreate(Session session) throws UnknownSessionException {
 		doSave(session);
 	}
 
