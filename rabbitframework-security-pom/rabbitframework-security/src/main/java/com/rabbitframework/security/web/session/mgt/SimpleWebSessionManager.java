@@ -26,12 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleWebSessionManager extends SimpleSessionManager implements WebSessionManager {
-
+	public static final String DEFAULT_TOKEN = "token";
 	private static final Logger log = LoggerFactory.getLogger(SimpleWebSessionManager.class);
-
 	private Cookie sessionIdCookie;
 	private boolean sessionIdCookieEnabled;
 	private String postLoginUrl = "/login";
+	private String tokenName = DEFAULT_TOKEN;
 
 	public SimpleWebSessionManager() {
 		Cookie cookie = new SimpleCookie(ShiroHttpSession.DEFAULT_SESSION_ID_NAME);
@@ -64,7 +64,7 @@ public class SimpleWebSessionManager extends SimpleSessionManager implements Web
 				if (id == null && WebUtils.isWeb(webSessionKey)) {
 					ServletRequest request = WebUtils.getRequest(webSessionKey);
 					ServletResponse response = WebUtils.getResponse(webSessionKey);
-					id = getSessionIdCookieValue(request, response);
+					id = getReferencedSessionId(request, response);
 					if (id != null) {
 						((SimpleSession) session).setId(id);
 					}
@@ -122,14 +122,12 @@ public class SimpleWebSessionManager extends SimpleSessionManager implements Web
 	}
 
 	private Serializable getReferencedSessionId(ServletRequest request, ServletResponse response) {
-
 		String id = getSessionIdCookieValue(request, response);
 		if (id != null) {
 			request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE,
 					ShiroHttpServletRequest.COOKIE_SESSION_ID_SOURCE);
 		} else {
-			id = getUriPathSegmentParamValue(request, ShiroHttpSession.DEFAULT_SESSION_ID_NAME);
-
+			id = getUriParamValue(request, ShiroHttpSession.DEFAULT_SESSION_ID_NAME);
 			if (id == null) {
 				// not a URI path segment parameter, try the query parameters:
 				String name = getSessionIdName();
@@ -154,54 +152,16 @@ public class SimpleWebSessionManager extends SimpleSessionManager implements Web
 		return id;
 	}
 
-	// SHIRO-351
-	// also see
-	// http://cdivilly.wordpress.com/2011/04/22/java-servlets-uri-parameters/
-	// since 1.2.2
-	private String getUriPathSegmentParamValue(ServletRequest servletRequest, String paramName) {
-
+	private String getUriParamValue(ServletRequest servletRequest, String paramName) {
 		if (!(servletRequest instanceof HttpServletRequest)) {
 			return null;
 		}
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
-		String uri = request.getRequestURI();
-		if (uri == null) {
-			return null;
+		String value = request.getParameter(paramName);
+		if (value == null) {
+			value = request.getParameter(getTokenName());
 		}
-
-		int queryStartIndex = uri.indexOf('?');
-		if (queryStartIndex >= 0) { // get rid of the query string
-			uri = uri.substring(0, queryStartIndex);
-		}
-
-		int index = uri.indexOf(';'); // now check for path segment parameters:
-		if (index < 0) {
-			// no path segment params - return:
-			return null;
-		}
-
-		// there are path segment params, let's get the last one that may exist:
-
-		final String TOKEN = paramName + "=";
-
-		uri = uri.substring(index + 1); // uri now contains only the path
-										// segment params
-
-		// we only care about the last JSESSIONID param:
-		index = uri.lastIndexOf(TOKEN);
-		if (index < 0) {
-			// no segment param:
-			return null;
-		}
-
-		uri = uri.substring(index + TOKEN.length());
-
-		index = uri.indexOf(';'); // strip off any remaining segment params:
-		if (index >= 0) {
-			uri = uri.substring(0, index);
-		}
-
-		return uri; // what remains is the value
+		return value;
 	}
 
 	// since 1.2.1
@@ -340,5 +300,13 @@ public class SimpleWebSessionManager extends SimpleSessionManager implements Web
 
 	public void setPostLoginUrl(String postLoginUrl) {
 		this.postLoginUrl = postLoginUrl;
+	}
+
+	public String getTokenName() {
+		return tokenName;
+	}
+
+	public void setTokenName(String tokenName) {
+		this.tokenName = tokenName;
 	}
 }

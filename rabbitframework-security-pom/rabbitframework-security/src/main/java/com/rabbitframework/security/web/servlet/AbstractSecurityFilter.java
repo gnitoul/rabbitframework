@@ -163,7 +163,7 @@ public abstract class AbstractSecurityFilter extends OncePerRequestFilter {
 	 */
 	protected ServletResponse wrapServletResponse(HttpServletResponse orig,
 			ShiroHttpServletRequest request) {
-		return new ShiroHttpServletResponse(orig, getServletContext(), request);
+		return new SecurityHttpServletResponse(orig, getServletContext(), request);
 	}
 
 	protected ServletResponse prepareServletResponse(ServletRequest request,
