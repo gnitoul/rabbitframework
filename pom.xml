@@ -32,7 +32,7 @@
 		<ehcache.version>2.6.11</ehcache.version>
 		<hsqldb.version>2.2.8</hsqldb.version>
 		<easymock.version>3.3.1</easymock.version>
-		<jstl.version>1.1.2</jstl.version>
+		<jstl.version>1.2</jstl.version>
 		<asm-tree.version>5.0.4</asm-tree.version>
 		<commons-lang.version>2.4</commons-lang.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
