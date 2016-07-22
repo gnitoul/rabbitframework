@@ -33,7 +33,7 @@ public class ${entity.objectName}${fileSuffix} {
     }
 
     public ${mIdProperties.javaType.shortName} ${mIdProperties.getterMethodName}() {
-        return ${mIdProperties.javaProperty}
+        return ${mIdProperties.javaProperty};
     }
 
 </#list>
