@@ -57,4 +57,12 @@ public abstract class SecurityAuthorizingRealm extends AuthorizingRealm {
 			cache.remove(prefix);
 		}
 	}
+
+	public void setCacheKeyPrefix(String cacheKeyPrefix) {
+		this.cacheKeyPrefix = cacheKeyPrefix;
+	}
+
+	public String getCacheKeyPrefix() {
+		return cacheKeyPrefix;
+	}
 }
