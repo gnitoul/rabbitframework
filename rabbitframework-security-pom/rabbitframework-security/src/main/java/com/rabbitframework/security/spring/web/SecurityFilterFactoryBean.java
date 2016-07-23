@@ -30,9 +30,9 @@ import com.rabbitframework.security.web.servlet.AbstractSecurityFilter;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean FactoryBean} to be used
- * in Spring-based web applications for defining the master Shiro Filter. <h4>
- * Usage</h4> Declare a DelegatingFilterProxy in {@code web.xml}, matching the
- * filter name to the bean id:
+ * in Spring-based web applications for defining the master Shiro Filter.
+ * <h4>Usage</h4> Declare a DelegatingFilterProxy in {@code web.xml}, matching
+ * the filter name to the bean id:
  * 
  * <pre>
  * &lt;filter&gt;
@@ -78,13 +78,12 @@ import com.rabbitframework.security.web.servlet.AbstractSecurityFilter;
  * &lt;/bean&gt;
  * </pre>
  * 
- * <h4>Global Property Values</h4>
- * Most Shiro servlet Filter implementations exist for defining custom Filter
- * {@link #setFilterChainDefinitions(String) chain definitions}. Most
- * implementations subclass one of the {@link AccessControlFilter},
- * {@link AuthenticationFilter}, {@link AuthorizationFilter} classes to simplify
- * things, and each of these 3 classes has configurable properties that are
- * application-specific.
+ * <h4>Global Property Values</h4> Most Shiro servlet Filter implementations
+ * exist for defining custom Filter {@link #setFilterChainDefinitions(String)
+ * chain definitions}. Most implementations subclass one of the
+ * {@link AccessControlFilter}, {@link AuthenticationFilter},
+ * {@link AuthorizationFilter} classes to simplify things, and each of these 3
+ * classes has configurable properties that are application-specific.
  * <p/>
  * A dilemma arises where, if you want to for example set the application's
  * 'loginUrl' for any Filter, you don't want to have to manually specify that
@@ -109,11 +108,9 @@ import com.rabbitframework.security.web.servlet.AbstractSecurityFilter;
  * 
  * @since 1.0
  */
-public class SecurityFilterFactoryBean implements FactoryBean,
-		BeanPostProcessor {
+public class SecurityFilterFactoryBean implements FactoryBean, BeanPostProcessor {
 
-	private static transient final Logger log = LoggerFactory
-			.getLogger(SecurityFilterFactoryBean.class);
+	private static transient final Logger log = LoggerFactory.getLogger(SecurityFilterFactoryBean.class);
 
 	private SecurityManager securityManager;
 
@@ -124,7 +121,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	private String loginUrl;
 	private String successUrl;
 	private String unauthorizedUrl;
-	private String filterUrl;
+	private String filterUrls;
 	private AbstractSecurityFilter instance;
 
 	public SecurityFilterFactoryBean() {
@@ -172,12 +169,12 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 		return loginUrl;
 	}
 
-	public void setFilterUrl(String filterUrl) {
-		this.filterUrl = filterUrl;
+	public void setFilterUrls(String filterUrls) {
+		this.filterUrls = filterUrls;
 	}
 
-	public String getFilterUrl() {
-		return filterUrl;
+	public String getFilterUrls() {
+		return filterUrls;
 	}
 
 	/**
@@ -315,8 +312,8 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 * &lt;/bean&gt;
 	 * </pre>
 	 * 
-	 * Will automatically place that bean into this Filters map under the key
-	 * '<b>myFilter</b>'.
+	 * Will automatically place that bean into this Filters map under the key '
+	 * <b>myFilter</b>'.
 	 *
 	 * @param filters
 	 *            the optional filterName-to-Filter map of filters available for
@@ -356,8 +353,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 *            use for creating filter chains intercepted by the Shiro
 	 *            Filter.
 	 */
-	public void setFilterChainDefinitionMap(
-			Map<String, String> filterChainDefinitionMap) {
+	public void setFilterChainDefinitionMap(Map<String, String> filterChainDefinitionMap) {
 		this.filterChainDefinitionMap = filterChainDefinitionMap;
 	}
 
@@ -382,8 +378,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 		ini.load(definitions);
 		// did they explicitly state a 'urls' section? Not necessary, but just
 		// in case:
-		Ini.Section section = ini
-				.getSection(IniFilterChainResolverFactory.URLS);
+		Ini.Section section = ini.getSection(IniFilterChainResolverFactory.URLS);
 		if (CollectionUtils.isEmpty(section)) {
 			// no urls section. Since this _is_ a urls chain definition
 			// property, just assume the
@@ -413,7 +408,8 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 * Returns
 	 * <code>{@link org.apache.shiro.web.servlet.AbstractShiroFilter}.class</code>
 	 *
-	 * @return <code>{@link org.apache.shiro.web.servlet.AbstractShiroFilter}.class</code>
+	 * @return <code>
+	 *         {@link org.apache.shiro.web.servlet.AbstractShiroFilter}.class</code>
 	 */
 	public Class getObjectType() {
 		return SpringSecurityFilter.class;
@@ -527,14 +523,12 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 		// here - we're just using it because it is a concrete
 		// AbstractShiroFilter instance that accepts
 		// injection of the SecurityManager and FilterChainResolver:
-		return new SpringSecurityFilter((WebSecurityManager) securityManager,
-				chainResolver,filterUrl);
+		return new SpringSecurityFilter((WebSecurityManager) securityManager, chainResolver, filterUrls);
 	}
 
 	private void applyLoginUrlIfNecessary(Filter filter) {
 		String loginUrl = getLoginUrl();
-		if (StringUtils.hasText(loginUrl)
-				&& (filter instanceof AccessControlFilter)) {
+		if (StringUtils.hasText(loginUrl) && (filter instanceof AccessControlFilter)) {
 			AccessControlFilter acFilter = (AccessControlFilter) filter;
 			// only apply the login url if they haven't explicitly configured
 			// one already:
@@ -547,14 +541,12 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 
 	private void applySuccessUrlIfNecessary(Filter filter) {
 		String successUrl = getSuccessUrl();
-		if (StringUtils.hasText(successUrl)
-				&& (filter instanceof AuthenticationFilter)) {
+		if (StringUtils.hasText(successUrl) && (filter instanceof AuthenticationFilter)) {
 			AuthenticationFilter authcFilter = (AuthenticationFilter) filter;
 			// only apply the successUrl if they haven't explicitly configured
 			// one already:
 			String existingSuccessUrl = authcFilter.getSuccessUrl();
-			if (AuthenticationFilter.DEFAULT_SUCCESS_URL
-					.equals(existingSuccessUrl)) {
+			if (AuthenticationFilter.DEFAULT_SUCCESS_URL.equals(existingSuccessUrl)) {
 				authcFilter.setSuccessUrl(successUrl);
 			}
 		}
@@ -562,8 +554,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 
 	private void applyUnauthorizedUrlIfNecessary(Filter filter) {
 		String unauthorizedUrl = getUnauthorizedUrl();
-		if (StringUtils.hasText(unauthorizedUrl)
-				&& (filter instanceof AuthorizationFilter)) {
+		if (StringUtils.hasText(unauthorizedUrl) && (filter instanceof AuthorizationFilter)) {
 			AuthorizationFilter authzFilter = (AuthorizationFilter) filter;
 			// only apply the unauthorizedUrl if they haven't explicitly
 			// configured one already:
@@ -586,8 +577,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 * {@link #setFilters(java.util.Map) filters map} that will be referenced
 	 * later during filter chain construction.
 	 */
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof Filter) {
 			log.debug("Found filter chain candidate filter '{}'", beanName);
 			Filter filter = (Filter) bean;
@@ -603,8 +593,7 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 * Does nothing - only exists to satisfy the BeanPostProcessor interface and
 	 * immediately returns the {@code bean} argument.
 	 */
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}
 
@@ -620,15 +609,13 @@ public class SecurityFilterFactoryBean implements FactoryBean,
 	 * properties explicitly. We do that in a simple concrete subclass in the
 	 * constructor.
 	 */
-	private static final class SpringSecurityFilter extends
-			AbstractSecurityFilter {
+	private static final class SpringSecurityFilter extends AbstractSecurityFilter {
 
-		protected SpringSecurityFilter(WebSecurityManager webSecurityManager,
-				FilterChainResolver resolver,String furl) {
+		protected SpringSecurityFilter(WebSecurityManager webSecurityManager, FilterChainResolver resolver,
+				String furl) {
 			super();
 			if (webSecurityManager == null) {
-				throw new IllegalArgumentException(
-						"WebSecurityManager property cannot be null.");
+				throw new IllegalArgumentException("WebSecurityManager property cannot be null.");
 			}
 			setFilterUrl(furl);
 			setSecurityManager(webSecurityManager);
