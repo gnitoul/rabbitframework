@@ -48,15 +48,20 @@ public class Md5Hash extends SimpleHash {
 		super(ALGORITHM_NAME, source, salt, hashIterations);
 	}
 
-	public static Md5Hash fromHexString(String hex) {
-		Md5Hash hash = new Md5Hash();
-		hash.setBytes(Hex.decode(hex));
-		return hash;
-	}
+//	public static Md5Hash fromHexString(String hex) {
+//		Md5Hash hash = new Md5Hash();
+//		hash.setBytes(Hex.decode(hex));
+//		return hash;
+//	}
+//
+//	public static Md5Hash fromBase64String(String base64) {
+//		Md5Hash hash = new Md5Hash();
+//		hash.setBytes(Base64.decode(base64));
+//		return hash;
+//	}
 
-	public static Md5Hash fromBase64String(String base64) {
-		Md5Hash hash = new Md5Hash();
-		hash.setBytes(Base64.decode(base64));
-		return hash;
+	public static String md5(String string) {
+		Md5Hash hash = new Md5Hash(string);
+		return hash.toString();
 	}
 }
