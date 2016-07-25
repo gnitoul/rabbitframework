@@ -82,6 +82,11 @@ public class RabbitSecurityUtils {
 		return false;
 	}
 
+	public static boolean isAuthenticated() {
+		Subject subject = SecurityUtils.getSubject();
+		return subject.isAuthenticated();
+	}
+
 	public static boolean login(UsernamePasswordToken token) {
 		Subject subject = SecurityUtils.getSubject();
 		try {
