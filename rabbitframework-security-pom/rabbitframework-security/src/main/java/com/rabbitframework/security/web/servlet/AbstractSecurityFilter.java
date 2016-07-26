@@ -8,7 +8,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.subject.ExecutionException;
 import org.apache.shiro.util.AntPathMatcher;
 import org.apache.shiro.util.PatternMatcher;
 import org.apache.shiro.util.StringUtils;
@@ -17,8 +16,6 @@ import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.rabbitframework.security.web.session.mgt.SessionThreadContext;
 
 public abstract class AbstractSecurityFilter extends AbstractShiroFilter {
 	private static final Logger log = LoggerFactory.getLogger(AbstractShiroFilter.class);
@@ -37,57 +34,32 @@ public abstract class AbstractSecurityFilter extends AbstractShiroFilter {
 	@Override
 	protected void doFilterInternal(ServletRequest servletRequest, ServletResponse servletResponse,
 			final FilterChain chain) throws ServletException, IOException {
-
-		Throwable t = null;
-
-		try {
-			final ServletRequest request = prepareServletRequest(servletRequest, servletResponse, chain);
-			final ServletResponse response = prepareServletResponse(request, servletResponse, chain);
-			boolean filter = true;
-			if (StringUtils.hasLength(filterUrl)) {
-				String[] filterUrls = filterUrl.split(",");
-				int length = filterUrls.length;
-				for (int i = 0; i < length; i++) {
-					String url = filterUrls[i];
-					if (pathsMatch(url, servletRequest)) {
-						filter = false;
-						executeChain(request, response, chain);
-						break;
-					}
+		final ServletRequest request = prepareServletRequest(servletRequest, servletResponse, chain);
+		final ServletResponse response = prepareServletResponse(request, servletResponse, chain);
+		boolean filter = true;
+		if (StringUtils.hasLength(filterUrl)) {
+			String[] filterUrls = filterUrl.split(",");
+			int length = filterUrls.length;
+			for (int i = 0; i < length; i++) {
+				String url = filterUrls[i];
+				if (pathsMatch(url, servletRequest)) {
+					filter = false;
+					executeChain(request, response, chain);
+					break;
 				}
 			}
-			if (filter) {
-				super.doFilterInternal(servletRequest, servletResponse, chain);
-				// final Subject subject = createSubject(request, response);
-				// // noinspection unchecked
-				// subject.execute(new Callable() {
-				// public Object call() throws Exception {
-				// updateSessionLastAccessTime(request, response);
-				// executeChain(request, response, chain);
-				// return null;
-				// }
-				// });
-			}
-		} catch (ExecutionException ex) {
-			t = ex.getCause();
-		} catch (Throwable throwable) {
-			t = throwable;
-		} finally {
-			log.debug("remove local thread session");
-			SessionThreadContext.remove();
 		}
-
-		if (t != null) {
-			if (t instanceof ServletException) {
-				throw (ServletException) t;
-			}
-			if (t instanceof IOException) {
-				throw (IOException) t;
-			}
-			// otherwise it's not one of the two exceptions expected by the
-			// filter method signature - wrap it in one:
-			String msg = "Filtered request failed.";
-			throw new ServletException(msg, t);
+		if (filter) {
+			super.doFilterInternal(servletRequest, servletResponse, chain);
+			// final Subject subject = createSubject(request, response);
+			// // noinspection unchecked
+			// subject.execute(new Callable() {
+			// public Object call() throws Exception {
+			// updateSessionLastAccessTime(request, response);
+			// executeChain(request, response, chain);
+			// return null;
+			// }
+			// });
 		}
 	}
 
