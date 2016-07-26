@@ -17,8 +17,8 @@ rabbitframework框架利用第三方开源框架以及对maven的依赖而整合
 	
 	5、支持创建表、分表分库(通过拦截器功能实现)；
 
-三、rabbitframework-security:权限框架,对[shiro1.2.4]进行扩展,主要扩展项如下：
-[shiro1.2.4]:https://github.com/apache/shiro/ "shiro1.2.4"
+三、rabbitframework-security:权限框架,对[shiro1.3.0]进行扩展,主要扩展项如下：
+[shiro1.3.0]:https://github.com/apache/shiro/ "shiro1.3.0"
 
     1、支持redis缓存模块。
     2、解决在使用第三方缓存时,不断刷缓存session的问题。
