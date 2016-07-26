@@ -9,8 +9,10 @@ import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.CacheManagerAware;
 import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.session.Session;
+import org.apache.shiro.session.SessionException;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.AbstractValidatingSessionManager;
+import org.apache.shiro.session.mgt.DefaultSessionContext;
 import org.apache.shiro.session.mgt.SessionContext;
 import org.apache.shiro.session.mgt.SessionFactory;
 import org.apache.shiro.session.mgt.SessionKey;
@@ -21,6 +23,7 @@ import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.subject.support.DelegatingSubject;
+import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.util.ThreadContext;
 import org.apache.shiro.web.util.SavedRequest;
 import org.slf4j.Logger;
@@ -75,6 +78,22 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager imple
 		return session.getAttribute(attributeKey);
 	}
 
+	private Session lookupSession(SessionKey key) throws SessionException {
+		if (key == null) {
+			throw new NullPointerException("SessionKey argument cannot be null.");
+		}
+		return doGetSession(key);
+	}
+
+	private Session lookupRequiredSession(SessionKey key) throws SessionException {
+		Session session = lookupSession(key);
+		if (session == null) {
+			String msg = "Unable to locate required Session instance based on SessionKey [" + key + "].";
+			throw new UnknownSessionException(msg);
+		}
+		return session;
+	}
+
 	@Override
 	public void setAttribute(SessionKey sessionKey, Object attributeKey, Object value) throws InvalidSessionException {
 		try {
@@ -84,7 +103,7 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager imple
 			if ((value instanceof PrincipalCollection) && sessionDAO != null && subject != null
 					&& (subject instanceof DelegatingSubject)) {
 				try {
-					SessionContext sessionContext = ((DelegatingSubject) subject).createSessionContext();
+					SessionContext sessionContext = createSessionContext(((DelegatingSubject) subject).getHost());
 					Session session = newSessionInstance(sessionContext);
 					session.setAttribute(attributeKey, value);
 					session.setTimeout(getGlobalSessionTimeout());
@@ -99,6 +118,14 @@ public class SimpleSessionManager extends AbstractValidatingSessionManager imple
 				}
 			}
 		}
+	}
+
+	protected SessionContext createSessionContext(String host) {
+		SessionContext sessionContext = new DefaultSessionContext();
+		if (StringUtils.hasText(host)) {
+			sessionContext.setHost(host);
+		}
+		return sessionContext;
 	}
 
 	/**
