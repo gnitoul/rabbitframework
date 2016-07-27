@@ -1,13 +1,14 @@
 package com.rabbitframework.commons.utils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.rabbitframework.commons.exceptions.DataParseException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.rabbitframework.commons.exceptions.DataParseException;
 
 public class JsonUtils {
 
@@ -17,6 +18,10 @@ public class JsonUtils {
 
 	public static String toJsonString(Object obj, SerializerFeature... features) {
 		return JSON.toJSONString(obj, features);
+	}
+
+	public static String toJsonString(Object obj, SerializeFilter filter, SerializerFeature... features) {
+		return JSON.toJSONString(obj, filter, features);
 	}
 
 	public static <T> T getObject(String jsonString, Class<T> cls) {
