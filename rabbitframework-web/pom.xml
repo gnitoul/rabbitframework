@@ -9,6 +9,11 @@
 	<artifactId>rabbitframework-web</artifactId>
 	<packaging>jar</packaging>
 	<dependencies>
+	 <dependency>
+            <groupId>com.rabbitframework</groupId>
+            <artifactId>rabbitframework-commons</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
