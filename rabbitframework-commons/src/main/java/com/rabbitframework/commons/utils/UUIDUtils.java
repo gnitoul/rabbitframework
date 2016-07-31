@@ -6,7 +6,7 @@ import com.fasterxml.uuid.EthernetAddress;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.NoArgGenerator;
 
-public class UUIDGenerator {
+public class UUIDUtils {
 	public static String DEFAULT_UUID36 = "00000000-0000-0000-0000-000000000000";
 	public static String DEFAULT_UUID32 = "00000000000000000000000000000000";
 	private static NoArgGenerator timeGenerator;
@@ -18,7 +18,7 @@ public class UUIDGenerator {
 
 	private static void ensureGeneratorInitialized() {
 		if (timeGenerator == null) {
-			synchronized (UUIDGenerator.class) {
+			synchronized (UUIDUtils.class) {
 				if (timeGenerator == null) {
 					timeGenerator = Generators.timeBasedGenerator(EthernetAddress.fromInterface());
 				}
