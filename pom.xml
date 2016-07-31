@@ -9,7 +9,7 @@
 	<modules>
 		<module>rabbitframework-commons</module>
 		<module>rabbitframework-security-pom</module>
-		<module>rabbitframework-jadb</module>
+		<module>rabbitframework-dbase</module>
 		<module>rabbitframework-web</module>
 		<module>rabbitframework-generator</module>
 	</modules>

@@ -4,7 +4,7 @@ package ${packageName};
 <#list entity.importPackage as importPackage>
 import ${importPackage}
 </#list>
-import com.rabbitframework.jadb.annontations.*;
+import com.rabbitframework.dbase.annontations.*;
 
 /**
 * This class corresponds to the database table ${entity.tableName}

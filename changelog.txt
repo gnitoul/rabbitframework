@@ -1,15 +1,16 @@
 一、rabbitframework1.1.1版本说明：
     1、修改security权限控制,将security进行分解，添加redis缓存功能,依整于apche的shrio。
     2、新增rabbitframework-generator模块，此模块用于生成代码生成。
-    3、jadb框架修改log4j的jar包,由log4j2改为slf4j。
+    3、dbase框架修改log4j的jar包,由log4j2改为slf4j。
     4、修改一些bug。
 
  二、rabbitframework1.1.2版本说明：
     1、升级fastjson版本到1.2.11。
     2、新增rabbitframework-generator框架,主要用于代码生成。
 
-    3、jadb版本修改说明：
+    3、dbase版本修改说明：
         A、修改数据库方言,改成配置方案。
+        B、由原来的jadb更名为dbase
 
     4、generator框架用于代码生成
         A、代码含有基本类型的生成方式，由原来生成对象改为直接生成基本类型。
