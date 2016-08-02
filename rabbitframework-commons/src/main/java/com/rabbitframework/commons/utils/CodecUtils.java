@@ -3,6 +3,7 @@ package com.rabbitframework.commons.utils;
 import com.rabbitframework.commons.exceptions.CodecException;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 
 /**
  * @author justin.liang
@@ -195,6 +196,16 @@ public class CodecUtils {
             } catch (IOException ignored) {
             }
         }
+    }
+
+    public static ByteBuffer byteBuffer(String s) {
+        return ByteBuffer.wrap(toBytes(s));
+    }
+
+    public String toString(ByteBuffer buffer) {
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+        return toString(bytes);
     }
 
     /**
