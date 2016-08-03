@@ -4,6 +4,7 @@ import com.rabbitframework.commons.exceptions.CodecException;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.UUID;
 
 /**
  * @author justin.liang
@@ -198,11 +199,36 @@ public class CodecUtils {
         }
     }
 
+    public static byte[] bytes(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+
+        long msb = uuid.getMostSignificantBits();
+        long lsb = uuid.getLeastSignificantBits();
+        byte[] buffer = new byte[16];
+
+        for (int i = 0; i < 8; i++) {
+            buffer[i] = (byte) (msb >>> (8 * (7 - i)));
+        }
+        for (int i = 8; i < 16; i++) {
+            buffer[i] = (byte) (lsb >>> (8 * (7 - i)));
+        }
+        return buffer;
+    }
+
+    public static ByteBuffer byteBuffer(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+        return ByteBuffer.wrap(bytes(uuid));
+    }
+
     public static ByteBuffer byteBuffer(String s) {
         return ByteBuffer.wrap(toBytes(s));
     }
 
-    public String toString(ByteBuffer buffer) {
+    public static String toString(ByteBuffer buffer) {
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
         return toString(bytes);
