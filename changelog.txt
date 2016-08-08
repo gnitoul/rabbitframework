@@ -24,3 +24,7 @@
 
     6、commons修改说明：
         A、新增JsonUtils公共类,依赖于fastJson包
+     
+     7、web修改说明:
+       A、新增utils包
+       B、升级jersey版本到2.23.1
