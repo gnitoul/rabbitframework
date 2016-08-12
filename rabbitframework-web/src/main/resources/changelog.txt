@@ -1,1 +1,1 @@
-1、升级jersey版本到2.22.1版。
+web模块依赖jersey
