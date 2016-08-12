@@ -34,8 +34,8 @@ public abstract class AbstractSecurityFilter extends AbstractShiroFilter {
 	@Override
 	protected void doFilterInternal(ServletRequest servletRequest, ServletResponse servletResponse,
 			final FilterChain chain) throws ServletException, IOException {
-		final ServletRequest request = prepareServletRequest(servletRequest, servletResponse, chain);
-		final ServletResponse response = prepareServletResponse(request, servletResponse, chain);
+//		final ServletRequest request = prepareServletRequest(servletRequest, servletResponse, chain);
+//		final ServletResponse response = prepareServletResponse(request, servletResponse, chain);
 		boolean filter = true;
 		if (StringUtils.hasLength(filterUrl)) {
 			String[] filterUrls = filterUrl.split(",");
@@ -44,7 +44,8 @@ public abstract class AbstractSecurityFilter extends AbstractShiroFilter {
 				String url = filterUrls[i];
 				if (pathsMatch(url, servletRequest)) {
 					filter = false;
-					executeChain(request, response, chain);
+					//executeChain(request, response, chain);
+					 chain.doFilter(servletRequest, servletResponse);
 					break;
 				}
 			}
