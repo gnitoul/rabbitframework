@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.rabbitframework</groupId>
             <artifactId>rabbitframework-commons</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
