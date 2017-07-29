@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import java.util.List;
 
 public interface StatementHandler {
-    BoundSql getBoundSql();
+    BoundSql[] getBoundSql();
 
     int update(JdbcTemplateHolder jdbcTemplateHolder);
 
@@ -15,4 +15,5 @@ public interface StatementHandler {
 
     PreparedStatementCreator createPreparedStatement();
 
+    int batchUpdate(JdbcTemplateHolder jdbcTemplateHolder);
 }

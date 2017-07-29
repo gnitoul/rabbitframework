@@ -10,6 +10,6 @@ public class Md5HashTest {
 
     @Test
     public void md5Hash() {
-        logger.debug("md5:" + DigestUtils.md5ToStr("123456"));
+        logger.info("md5:" + DigestUtils.md5ToStr("123456"));
     }
 }

@@ -6,7 +6,11 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 public class JedisPoolManager implements RedisManager {
-	private static JedisPool jedisPool = null;
+	private JedisPool jedisPool = null;
+
+	public void setJedisPool(JedisPool jedisPool) {
+		this.jedisPool = jedisPool;
+	}
 
 	@Override
 	public byte[] get(byte[] key) {

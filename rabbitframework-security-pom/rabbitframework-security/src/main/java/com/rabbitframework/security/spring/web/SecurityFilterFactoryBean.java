@@ -14,7 +14,6 @@ import org.apache.shiro.web.config.IniFilterChainResolverFactory;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.filter.authc.AuthenticationFilter;
 import org.apache.shiro.web.filter.authz.AuthorizationFilter;
-import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.filter.mgt.FilterChainManager;
 import org.apache.shiro.web.filter.mgt.FilterChainResolver;
 import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
+import com.rabbitframework.security.web.filter.SecurityFilterChainManager;
 import com.rabbitframework.security.web.servlet.AbstractSecurityFilter;
 
 /**
@@ -409,7 +409,8 @@ public class SecurityFilterFactoryBean implements FactoryBean, BeanPostProcessor
 	 * <code>{@link org.apache.shiro.web.servlet.AbstractShiroFilter}.class</code>
 	 *
 	 * @return <code>
-	 *         {@link org.apache.shiro.web.servlet.AbstractShiroFilter}.class</code>
+	 *         
+	{@link org.apache.shiro.web.servlet.AbstractShiroFilter}.class</code>
 	 */
 	public Class getObjectType() {
 		return SpringSecurityFilter.class;
@@ -428,7 +429,7 @@ public class SecurityFilterFactoryBean implements FactoryBean, BeanPostProcessor
 
 	protected FilterChainManager createFilterChainManager() {
 
-		DefaultFilterChainManager manager = new DefaultFilterChainManager();
+		SecurityFilterChainManager manager = new SecurityFilterChainManager();
 		Map<String, Filter> defaultFilters = manager.getFilters();
 		// apply global settings if necessary:
 		for (Filter filter : defaultFilters.values()) {

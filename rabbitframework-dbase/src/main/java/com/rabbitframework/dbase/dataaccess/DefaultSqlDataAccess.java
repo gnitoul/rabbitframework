@@ -149,6 +149,18 @@ public class DefaultSqlDataAccess implements SqlDataAccess {
         }
     }
 
+    @Override
+    public int batchUpdate(String statement, List<Object> parameter) {
+        try {
+            MappedStatement ms = configuration.getMappedStatement(statement);
+            Executor executor = configuration.newExecutor(ms.getCache());
+            return executor.batchUpdate(ms, parameter);
+        } catch (Exception e) {
+            throw new PersistenceException("Error updating database.  Cause: "
+                    + e, e);
+        }
+    }
+
     /**
      * 判断参数是否为集合或者数组，如果是将参数放到map当中，
      * 放入方式为；list：map.put("list",object),array:map.put("array",object);

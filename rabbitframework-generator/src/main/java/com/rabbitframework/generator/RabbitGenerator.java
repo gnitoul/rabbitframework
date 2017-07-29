@@ -37,6 +37,9 @@ public class RabbitGenerator {
             Template template = configuration.getTemplate();
             Map<String, JavaModeGenerate> templateMappingMap = template.getTemplateMapping();
             Map<String, Object> outMap = new HashMap<String, Object>();
+            String modelPackage = configuration.getVariables().getProperty(Constants.MODEL_PACKAGE);
+            modelPackage = modelPackage == null ? "" : modelPackage;
+            outMap.put(Constants.MODEL_PACKAGE, modelPackage);
             for (Map.Entry<String, JavaModeGenerate> entry : templateMappingMap.entrySet()) {
                 String key = entry.getKey();
                 JavaModeGenerate javaModeGenerate = entry.getValue();
@@ -48,8 +51,9 @@ public class RabbitGenerator {
                 outMap.put(Constants.FILE_SUFFIX_KEY, fileSuffix);
                 for (EntityMapping entityMapping : entityMappings) {
                     outMap.put(Constants.ENTITY_KEY, entityMapping);
+                    String fileName = entityMapping.getObjectName() + fileSuffix + extension;
 //                    template.printToConsole(outMap, key);
-                    template.printToFile(outMap, key, outPath, entityMapping.getObjectName() + extension);
+                    template.printToFile(outMap, key, outPath, fileName);
                 }
             }
 

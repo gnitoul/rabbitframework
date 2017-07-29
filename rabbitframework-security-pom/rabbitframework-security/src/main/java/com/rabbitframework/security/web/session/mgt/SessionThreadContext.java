@@ -7,19 +7,19 @@ public class SessionThreadContext {
 	public static String SESSION_KEY = SessionThreadContext.class + "_SESSION_KEY";
 
 	public static void set(Session session) {
-		threadLocal.set(session);
+//		threadLocal.set(session);
 	}
 
 	public static Session get() {
-		return threadLocal.get();
+		return null;
 	}
 
 	public static void remove() {
-		try {
-			threadLocal.set(null);
-			threadLocal.remove();
-		} catch (Exception e) {
-
-		}
+//		try {
+//			threadLocal.set(null);
+//			threadLocal.remove();
+//		} catch (Exception e) {
+//
+//		}
 	}
 }

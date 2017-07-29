@@ -7,11 +7,11 @@ public class NumberUtils {
 	 * @param value
 	 * @return
 	 */
-	public long getValueByLong(Long value) {
+	public static long getValueByLong(Long value) {
 		return getValueByLong(value, 0L);
 	}
 
-	public long getValueByLong(Long value, long defaultValue) {
+	public static long getValueByLong(Long value, long defaultValue) {
 		long result = defaultValue;
 		if (value == null) {
 			return result;
@@ -25,11 +25,11 @@ public class NumberUtils {
 	 * @param value
 	 * @return
 	 */
-	public int getValueByInteger(Integer value) {
+	public static int getValueByInteger(Integer value) {
 		return getValueByInteger(value, 0);
 	}
 
-	public int getValueByInteger(Integer value, int defaultValue) {
+	public static int getValueByInteger(Integer value, int defaultValue) {
 		int result = defaultValue;
 		if (value == null) {
 			return result;

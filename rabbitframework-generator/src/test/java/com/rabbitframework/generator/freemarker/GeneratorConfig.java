@@ -64,7 +64,7 @@ public class GeneratorConfig {
 	public void list() {
 		try {
 			Template template = configuration.getTemplate("list.ftl");
-			List<Model> models = new ArrayList<>();
+			List<Model> models = new ArrayList<Model>();
 			for (int i = 0; i < 3; i++) {
 				Model model = new Model();
 				model.setId(i);

@@ -13,8 +13,6 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.DelegatingSession;
 import org.apache.shiro.session.mgt.SessionContext;
 import org.apache.shiro.session.mgt.SessionKey;
-import org.apache.shiro.session.mgt.SimpleSession;
-import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.servlet.Cookie;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.servlet.ShiroHttpSession;
@@ -44,36 +42,39 @@ public class SimpleWebSessionManager extends SimpleSessionManager implements Web
 	/**
 	 * 创建session
 	 */
-	@Override
-	protected Session doCreateSession(SessionContext context) {
-		Session session = newSessionInstance(context);
-		if (log.isTraceEnabled()) {
-			log.trace("Creating session for host {}", session.getHost());
-		}
-		// 去掉重复生成sessionId
-		if (session.getId() == null && session instanceof SimpleSession) {
-			HttpServletRequest httpRequest = WebUtils.getHttpRequest(context);
-			String currUrl = WebUtils.getPathWithinApplication(WebUtils.toHttp(httpRequest));
-			boolean isLoginSubmission = WebUtils.toHttp(httpRequest).getMethod()
-					.equalsIgnoreCase(AccessControlFilter.POST_METHOD);
-			if (postLoginUrl != null && postLoginUrl.equals(currUrl) && isLoginSubmission) {
-				// ignore
-			} else {
-				WebSessionKey webSessionKey = new WebSessionKey(httpRequest, WebUtils.getHttpResponse(context));
-				Serializable id = super.getSessionId(webSessionKey);
-				if (id == null && WebUtils.isWeb(webSessionKey)) {
-					ServletRequest request = WebUtils.getRequest(webSessionKey);
-					ServletResponse response = WebUtils.getResponse(webSessionKey);
-					id = getReferencedSessionId(request, response);
-					if (id != null) {
-						((SimpleSession) session).setId(id);
-					}
-				}
-			}
-		}
-		create(session);
-		return session;
-	}
+	// @Override
+	// protected Session doCreateSession(SessionContext context) {
+	// Session session = newSessionInstance(context);
+	// if (log.isTraceEnabled()) {
+	// log.trace("Creating session for host {}", session.getHost());
+	// }
+	// // 去掉重复生成sessionId
+	//// if (session.getId() == null && session instanceof SimpleSession) {
+	//// HttpServletRequest httpRequest = WebUtils.getHttpRequest(context);
+	//// String currUrl =
+	// WebUtils.getPathWithinApplication(WebUtils.toHttp(httpRequest));
+	//// boolean isLoginSubmission = WebUtils.toHttp(httpRequest).getMethod()
+	//// .equalsIgnoreCase(AccessControlFilter.POST_METHOD);
+	//// if (postLoginUrl != null && postLoginUrl.equals(currUrl) &&
+	// isLoginSubmission) {
+	//// // ignore
+	//// } else {
+	//// WebSessionKey webSessionKey = new WebSessionKey(httpRequest,
+	// WebUtils.getHttpResponse(context));
+	//// Serializable id = super.getSessionId(webSessionKey);
+	//// if (id == null && WebUtils.isWeb(webSessionKey)) {
+	//// ServletRequest request = WebUtils.getRequest(webSessionKey);
+	//// ServletResponse response = WebUtils.getResponse(webSessionKey);
+	//// id = getReferencedSessionId(request, response);
+	//// if (id != null) {
+	//// ((SimpleSession) session).setId(id);
+	//// }
+	//// }
+	//// }
+	//// }
+	// create(session);
+	// return session;
+	// }
 
 	public Cookie getSessionIdCookie() {
 		return sessionIdCookie;
@@ -137,6 +138,7 @@ public class SimpleWebSessionManager extends SimpleSessionManager implements Web
 					id = request.getParameter(name.toLowerCase());
 				}
 			}
+
 			if (id != null) {
 				request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE,
 						ShiroHttpServletRequest.URL_SESSION_ID_SOURCE);
@@ -160,6 +162,10 @@ public class SimpleWebSessionManager extends SimpleSessionManager implements Web
 		String value = request.getParameter(paramName);
 		if (value == null) {
 			value = request.getParameter(getTokenName());
+		}
+		// 如果vlaue为空从head中获取
+		if (value == null) {
+			value = request.getHeader(getTokenName());
 		}
 		return value;
 	}

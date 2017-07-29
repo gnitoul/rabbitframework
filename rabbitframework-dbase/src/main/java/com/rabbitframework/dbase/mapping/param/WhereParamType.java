@@ -35,7 +35,7 @@ public class WhereParamType {
 		}
 	}
 
-	public void put(String key, String value) {
+	public void put(String key, Object value) {
 		params.put(key, value);
 	}
 

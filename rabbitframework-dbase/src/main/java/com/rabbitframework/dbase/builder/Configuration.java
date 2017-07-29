@@ -178,8 +178,8 @@ public class Configuration {
     }
 
     public StatementHandler newStatementHandler(
-            MappedStatement mappedStatement, Object parameterObject,
-            BoundSql boundSql) {
+            MappedStatement mappedStatement, Object[] parameterObject,
+            BoundSql... boundSql) {
         StatementHandler statementHandler = new PreparedStatementHandler(
                 mappedStatement, parameterObject, boundSql);
         statementHandler = (StatementHandler) interceptorChain

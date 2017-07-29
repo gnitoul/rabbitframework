@@ -12,8 +12,26 @@ import com.rabbitframework.commons.exceptions.DataParseException;
 
 public class JsonUtils {
 
+	/**
+	 * 标准输入json字符串
+	 * 
+	 * @param obj
+	 * @return
+	 */
 	public static String toJsonString(Object obj) {
 		return JSON.toJSONString(obj);
+	}
+
+	/**
+	 * 参数中空值转换输出
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public static String nullConvertToJsonStr(Object obj) {
+		return JsonUtils.toJsonString(obj, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullNumberAsZero,
+				SerializerFeature.WriteNullNumberAsZero, SerializerFeature.WriteNullListAsEmpty,
+				SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullBooleanAsFalse);
 	}
 
 	public static String toJsonString(Object obj, SerializerFeature... features) {

@@ -38,18 +38,19 @@ public class FreemarkerTest {
         try {
             Template template = configuration.getTemplate("simple.ftl");
             Map map = new HashMap();
-            map.put("user", "rabbit");
+            map.put("pageSize","盒");
+            map.put("page","11");
             template.process(map, new OutputStreamWriter(System.out));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
 
-    @Test
+//    @Test
     public void list() {
         try {
             Template template = configuration.getTemplate("list.ftl");
-            List<Model> models = new ArrayList<>();
+            List<Model> models = new ArrayList<Model>();
             for (int i = 0; i < 3; i++) {
                 Model model = new Model();
                 model.setId(i);

@@ -15,7 +15,7 @@ public class JdbcTemplateHolder {
         dataSourceFactory = environment.getDataSourceFactory();
     }
 
-    public JdbcTemplate getJdbcTempleate(MappedStatement mappedStatement) {
+    public JdbcTemplate getJdbcTemplate(MappedStatement mappedStatement) {
         DataSource dataSource = dataSourceFactory.getDataSource(mappedStatement);
         if (dataSource == null) {
             throw new NullPointerException("cannot found a dataSource for: " + mappedStatement);

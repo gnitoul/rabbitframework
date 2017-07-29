@@ -13,30 +13,20 @@ import com.rabbitframework.dbase.annontations.Mapper;
 import com.rabbitframework.dbase.annontations.Param;
 import com.rabbitframework.dbase.annontations.Select;
 import com.rabbitframework.dbase.annontations.Update;
+import com.rabbitframework.dbase.mapping.BaseMapper;
 import com.rabbitframework.dbase.mapping.RowBounds;
 import com.rabbitframework.dbase.mapping.param.WhereParamType;
 
 @Mapper
-public interface TestUserMapper {
-    public static final String table = "test_user";
+public interface TestUserMapper extends BaseMapper<TestUser> {
 
-    @Create("create table test_user (id int primary key auto_increment, test_name varchar(200))")
+    @Create("create table test_user (id int primary key auto_increment,test_name varchar(200))")
     public int createTestUser();
-
-    // @Insert("insert into test_user(test_name) values(#{testName})")
-    @Insert
-    public int insertTest(TestUser testUser);
 
     @Update("update test_user set test_name=#{testName} where id=#{id}")
     public int updateTest(@Param("id") long id, @Param("testName") String testName);
 
-    @Update
-    public int updateTestByUser(TestUser testUser);
-
-    @Delete("delete from test_user where id=#{id}")
-    public int delTestUser(long id);
-
-    @Select("select * from @{table}")
+    @Select("select * from test_user")
     @CacheNamespace(pool = "defaultCache", key = {"seltestuser"})
     public List<TestUser> selectTestUser();
 
@@ -44,9 +34,18 @@ public interface TestUserMapper {
     @MapKey("id")
     public Map<Long, TestUser> selectTestUserToMap();
 
-    @Select("select * from @{table}")
+    @Select("select * from test_user")
     public List<TestUser> selectTestUserByPage(RowBounds rowBounds);
 
-    @Select("select * from test_user")
-    public List<TestUser> selectTesstUserByParamType(WhereParamType paramType);
+
+    @Update("update test_user set test_name=#{testName} where id in "
+            + "<foreach collection=\"ids\" item=\"listItem\" open=\"(\" close=\")\" separator=\",\" >#{listItem}</foreach>")
+    public int updateTestUserByParamType(@Param("testName") String testName, @Param("ids") Object obj);
+
+
+    @Update("update test_user set test_name=#{params.testName} where 1=1 ")
+    public int updateTestUserByWhereParam(WhereParamType whereParamType);
+
+    @Insert(batch = true)
+    public int bacthInsert(List<TestUser> testUsers);
 }

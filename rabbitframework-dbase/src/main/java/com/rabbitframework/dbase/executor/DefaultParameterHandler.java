@@ -16,57 +16,54 @@ import com.rabbitframework.dbase.mapping.MappedStatement;
 import com.rabbitframework.dbase.mapping.ParameterMapping;
 
 public class DefaultParameterHandler implements ParameterHandler {
-	private static final Logger logger = LoggerFactory.getLogger(DefaultParameterHandler.class);
-	private Configuration configuration;
-	private final Object parameterObject;
-	private BoundSql boundSql;
+    private static final Logger logger = LoggerFactory.getLogger(DefaultParameterHandler.class);
+    private Configuration configuration;
+    private final Object parameterObject;
+    private BoundSql boundSql;
 
-	public DefaultParameterHandler(MappedStatement mappedStatement,
-			Object parameterObject, BoundSql boundSql) {
-		this.parameterObject = parameterObject;
-		configuration = mappedStatement.getConfiguration();
-		this.boundSql = boundSql;
-	}
+    public DefaultParameterHandler(MappedStatement mappedStatement,
+                                   Object parameterObject, BoundSql boundSql) {
+        this.parameterObject = parameterObject;
+        configuration = mappedStatement.getConfiguration();
+        this.boundSql = boundSql;
+    }
 
-	@SuppressWarnings("unchecked")
-	public void setParameters(PreparedStatement ps) throws SQLException {
-		try {
-			List<ParameterMapping> parameterMappings = boundSql
-					.getParameterMappings();
-			if (parameterMappings != null) {
-				for (int i = 0; i < parameterMappings.size(); i++) {
-					ParameterMapping parameterMapping = parameterMappings
-							.get(i);
-					Object value;
-					String propertyName = parameterMapping.getProperty();
-					if (boundSql.hasAdditionalParameter(propertyName)) {
-						value = boundSql.getAdditionalParameter(propertyName);
-					} else if (parameterObject == null) {
-						value = "";
-					} else {
-						Class<?> type = parameterObject.getClass();
-						boolean isPrimitive = isColumnType(type);
-						if (isPrimitive) {
-							value = parameterObject;
-						} else {
-							MetaObject metaObject = configuration
-									.newMetaObject(parameterObject);
-							value = metaObject.getValue(propertyName);
-						}
-					}
-					StatementCreatorUtils.setParameterValue(ps, i + 1,
-							SqlTypeValue.TYPE_UNKNOWN, value);
-				}
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			throw new SQLException(e.getMessage(), e);
-		}
-	}
+    @SuppressWarnings("unchecked")
+    public void setParameters(PreparedStatement ps) throws SQLException {
+        try {
+            List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+            if (parameterMappings != null) {
+                int paramMappingSize = parameterMappings.size();
+                for (int i = 0; i < paramMappingSize; i++) {
+                    ParameterMapping parameterMapping = parameterMappings.get(i);
+                    Object value;
+                    String propertyName = parameterMapping.getProperty();
+                    if (boundSql.hasAdditionalParameter(propertyName)) {
+                        value = boundSql.getAdditionalParameter(propertyName);
+                    } else if (parameterObject == null) {
+                        value = "";
+                    } else {
+                        Class<?> type = parameterObject.getClass();
+                        boolean isPrimitive = isColumnType(type);
+                        if (isPrimitive) {
+                            value = parameterObject;
+                        } else {
+                            MetaObject metaObject = configuration.newMetaObject(parameterObject);
+                            value = metaObject.getValue(propertyName);
+                        }
+                    }
+                    StatementCreatorUtils.setParameterValue(ps, i + 1, SqlTypeValue.TYPE_UNKNOWN, value);
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new SQLException(e.getMessage(), e);
+        }
+    }
 
-	private boolean isColumnType(Class<?> columnTypeCandidate) {
-		return String.class == columnTypeCandidate
-				|| org.springframework.util.ClassUtils
-						.isPrimitiveOrWrapper(columnTypeCandidate);
-	}
+    private boolean isColumnType(Class<?> columnTypeCandidate) {
+        return String.class == columnTypeCandidate
+                || org.springframework.util.ClassUtils
+                .isPrimitiveOrWrapper(columnTypeCandidate);
+    }
 }

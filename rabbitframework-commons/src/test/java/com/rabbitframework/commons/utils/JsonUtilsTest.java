@@ -2,7 +2,6 @@ package com.rabbitframework.commons.utils;
 
 import java.util.List;
 
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.rabbitframework.commons.bean.DataResponse;
 import com.rabbitframework.commons.bean.DetailData;
 import com.rabbitframework.commons.bean.IData;
@@ -18,13 +17,13 @@ public class JsonUtilsTest {
 		List<IData> idatas = dataResponse.getData();
 		idatas.add(userData);
 		idatas.add(detailData);
-		String s = JsonUtils.toJsonString(dataResponse, SerializerFeature.WriteClassName);
+		String s = JsonUtils.nullConvertToJsonStr(dataResponse);
 		System.out.println(s);
-		DataResponse d = JsonUtils.getObject(s, DataResponse.class);
-		List<IData> idataResult = d.getData();
-		for (IData iData : idataResult) {
-			System.out.println(iData.getClass().getName());
-		}
+//		DataResponse d = JsonUtils.getObject(s, DataResponse.class);
+//		List<IData> idataResult = d.getData();
+//		for (IData iData : idataResult) {
+//			System.out.println(iData.getClass().getName());
+//		}
 		// UserData iData = (UserData) idataResult.get(0);
 		// System.out.println(iData.getUserName());
 		// DetailData detailData2 = (DetailData) idataResult.get(1);

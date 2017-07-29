@@ -13,7 +13,6 @@ import java.util.Map;
 
 public class DynamicContext {
     public static final String PARAMETER_OBJECT_KEY = "_parameter";
-    public static final String DATABASE_ID_KEY = "_databaseId";
 
     static {
         OgnlRuntime.setPropertyAccessor(ContextMap.class, new ContextAccessor());

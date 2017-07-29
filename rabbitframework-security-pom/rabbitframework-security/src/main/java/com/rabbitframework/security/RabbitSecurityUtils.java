@@ -17,16 +17,19 @@ public class RabbitSecurityUtils {
 
 	public static SecurityUser getSecurityUser() {
 		Subject subject = SecurityUtils.getSubject();
-		if (subject.isAuthenticated()) {
-			Object obj = subject.getPrincipal();
-			if (obj != null && (obj instanceof SecurityUser)) {
-				return (SecurityUser) obj;
-			}
-			return null;
-		} else {
-			// 没有权限时使用
+		if (subject == null) {
 			return null;
 		}
+		Object obj = null;
+		try {
+			obj = subject.getPrincipal();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		if (obj != null && (obj instanceof SecurityUser)) {
+			return (SecurityUser) obj;
+		}
+		return null;
 	}
 
 	/**

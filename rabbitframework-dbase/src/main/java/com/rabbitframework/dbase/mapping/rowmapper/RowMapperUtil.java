@@ -18,10 +18,10 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 
 public class RowMapperUtil {
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static RowMapper getRowMapper(Method method) {
+    public static RowMapper getRowMapper(Method method, Class<?> genericClass) {
         RowMapper<?> rowMapper = null;
         Class<?> returnType = method.getReturnType();
-        Class<?> returnParamType = ReflectUtils.getReturnType(method);
+        Class<?> returnParamType = ReflectUtils.getReturnType(method, genericClass);
         if (returnParamType.isPrimitive()) {
             returnParamType = ClassUtils.primitiveToWrapper(returnParamType);
         }

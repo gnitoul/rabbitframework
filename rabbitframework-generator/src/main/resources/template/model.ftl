@@ -2,7 +2,7 @@
 package ${packageName};
 </#if>
 <#list entity.importPackage as importPackage>
-import ${importPackage}
+import ${importPackage};
 </#list>
 import com.rabbitframework.dbase.annontations.*;
 
@@ -13,15 +13,19 @@ import com.rabbitframework.dbase.annontations.*;
 public class ${entity.objectName}${fileSuffix} {
 <#list entity.idProperties as idProperties>
     /**
-    * This field corresponds to the database column ${entity.tableName}.${idProperties.columnName}
+    * This field corresponds to the database column ${entity.tableName}.${idProperties.columnName} 
+    * <p/>
+    * description:${idProperties.remarks} 
     */
     @ID
     private ${idProperties.javaType.shortName} ${idProperties.javaProperty};
-
+    
 </#list>
 <#list entity.columnProperties as columnProperties>
     /**
     * This field corresponds to the database column ${entity.tableName}.${columnProperties.columnName}
+    * <p/>
+    * description:${columnProperties.remarks} 
     */
     @Column
     private ${columnProperties.javaType.shortName} ${columnProperties.javaProperty};
@@ -43,7 +47,7 @@ public class ${entity.objectName}${fileSuffix} {
     }
 
     public ${mColumnProperties.javaType.shortName} ${mColumnProperties.getterMethodName}() {
-        return ${mColumnProperties.javaProperty}
+        return ${mColumnProperties.javaProperty};
     }
 
 </#list>
