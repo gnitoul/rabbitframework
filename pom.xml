@@ -2,15 +2,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.tjzq.all</groupId>
-        <artifactId>tjzq-all-pom</artifactId>
-        <version>1.0</version>
+        <groupId>com.tjzq.root</groupId>
+        <artifactId>tjzq-root-pom</artifactId>
+        <version>1.1</version>
     </parent>
     <groupId>com.rabbitframework</groupId>
     <artifactId>rabbitframework</artifactId>
     <version>2.0</version>
     <packaging>pom</packaging>
-
     <modules>
         <module>rabbitframework-commons</module>
         <module>rabbitframework-security-pom</module>
@@ -95,4 +94,16 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <distributionManagement>
+        <repository>
+            <id>oss-nexus</id>
+            <url>http://47.92.131.197/nexus/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
+    <repositories>
+        <repository>
+            <id>oss-nexus</id>
+            <url>http://47.92.131.197/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
 </project>
