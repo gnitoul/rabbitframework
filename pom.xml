@@ -103,7 +103,7 @@
     <repositories>
         <repository>
             <id>oss-nexus</id>
-            <url>http://47.92.131.197/nexus/content/repositories/releases/</url>
+            <url>http://47.92.131.197/nexus/content/groups/public/</url>
         </repository>
     </repositories>
 </project>
