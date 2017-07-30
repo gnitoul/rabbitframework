@@ -30,5 +30,5 @@ rabbitframework框架利用第三方开源框架以及对maven的依赖而整合
 
 五、rabbitframework-generator:代码生成器模块,代码生成器通过使用配置和freemarker模板来完成,核心代码将数据库中的表结构转换为实体对象。根据配置信息将实体对象传入模板中,最终生成代码文件。目前默认模板在template/目录中，模板也可以自定义,其模板格式可以查看示例。
 
-六、上述代码,部分可以从我的另一个示例工程中查看示例:[https://github.com/xuegongzi/learningExample]
+六、示例:[https://github.com/xuegongzi/learningExample]
 [https://github.com/xuegongzi/learningExample]:https://github.com/xuegongzi/learningExample
