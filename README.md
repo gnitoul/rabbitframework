@@ -4,8 +4,6 @@ rabbitframework框架利用第三方开源框架以及对maven的依赖而整合
 一、rabbitframework-commons:公共模块，包括对xml解释，反射机制通用类。
 
 二、rabbitframework-dbase:数据库ORM模块,主要实现以下功能：
-[paoding-rose]:https://github.com/paoding-code/paoding-rose "rose"
-[mybatis]:https://github.com/mybatis/mybatis-3 "mybatis"
 
 	1、全sql的注释方式；
 	
@@ -17,18 +15,15 @@ rabbitframework框架利用第三方开源框架以及对maven的依赖而整合
 	
 	5、支持创建表、分表分库(通过拦截器功能实现)；
 
-三、rabbitframework-security:权限框架,对[shiro1.3.0]进行扩展,主要扩展项如下：
-[shiro1.3.0]:https://github.com/apache/shiro/ "shiro1.3.0"
+三、rabbitframework-security:权限框架,对[shiro1.3.0](https://github.com/apache/shiro/)进行扩展,主要扩展项如下：
 
     1、支持redis缓存模块。
     2、解决在使用第三方缓存时,不断刷缓存session的问题。
     3、增加权限缓存过期处理。
     
 
-四、rabbitframework-web:web-rest框架，集成[jersey2]框架，
-[jersey2]: https://github.com/jersey/jersey "jersey2"
+四、rabbitframework-web:web-rest框架，集成[jersey2](https://github.com/jersey/jersey)框架，
 
 五、rabbitframework-generator:代码生成器模块,代码生成器通过使用配置和freemarker模板来完成,核心代码将数据库中的表结构转换为实体对象。根据配置信息将实体对象传入模板中,最终生成代码文件。目前默认模板在template/目录中，模板也可以自定义,其模板格式可以查看示例。
 
-六、示例:[https://github.com/xuegongzi/learningExample]
-[https://github.com/xuegongzi/learningExample]:https://github.com/xuegongzi/learningExample
+六、示例:[learningExample](https://github.com/xuegongzi/learningExample)
