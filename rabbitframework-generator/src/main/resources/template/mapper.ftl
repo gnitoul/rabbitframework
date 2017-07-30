@@ -10,6 +10,6 @@ import com.rabbitframework.dbase.annontations.Mapper;
 * database table ${entity.tableName} mapper interface
 **/
 @Mapper
-public interface ${entity.objectName}${fileSuffix} extends BaseMapper<${entity.objectName}>{
+public interface ${entity.objectName}${fileSuffix} <#if (modelPackage??) && (modelPackage != "")> extends BaseMapper<${entity.objectName}></#if> {
 
 }
