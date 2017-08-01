@@ -1,5 +1,6 @@
 package com.rabbitframework.web.utils;
 
+import com.rabbitframework.commons.utils.StatusCode;
 import com.rabbitframework.web.DataJsonResponse;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -13,9 +14,9 @@ import java.util.Set;
 
 
 /**
- * 校验工具类
+ * hibernate验证共公类
  *
- * @author wdmcygah
+ * @author justin.liang
  */
 public class ValidationUtils {
 
@@ -28,7 +29,7 @@ public class ValidationUtils {
             return result;
         }
         result = new DataJsonResponse();
-        result.setStatus(DataJsonResponse.SC_VALID_ERROR);
+        result.setStatus(StatusCode.SC_VALID_ERROR);
         result.setMessage(ServletContextHelper.getMessage("fail"));
         List<FieldError> fieldErrors = getFiledErrors(set);
         result.setData(fieldErrors);
@@ -56,7 +57,7 @@ public class ValidationUtils {
         DataJsonResponse result = new DataJsonResponse();
         Set<ConstraintViolation<T>> set = validator.validateProperty(obj, propertyName, Default.class);
         if (CollectionUtils.isNotEmpty(set)) {
-            result.setStatus(DataJsonResponse.SC_VALID_ERROR);
+            result.setStatus(StatusCode.SC_VALID_ERROR);
             StringBuffer errorMsg = new StringBuffer();
             for (ConstraintViolation<T> cv : set) {
                 errorMsg.append("arg:");

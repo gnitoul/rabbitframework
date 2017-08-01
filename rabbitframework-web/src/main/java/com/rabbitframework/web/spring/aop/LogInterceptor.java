@@ -62,7 +62,7 @@ public class LogInterceptor {
             String jsonValue = JsonUtils.nullConvertToJsonStr(logInfo);
             logger.debug("logInfo=>" + jsonValue);
         } catch (Exception e) {
-            logger.warn("get loginfo fail");
+            logger.warn("get logInfo fail");
         }
         return pjp.proceed();
     }

@@ -1,19 +1,32 @@
 package com.rabbitframework.web.spring.aop;
 
+import com.rabbitframework.commons.utils.StringUtils;
 import com.rabbitframework.web.DataJsonResponse;
+import com.rabbitframework.web.annotations.FormValid;
 import com.rabbitframework.web.utils.ResponseUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.BeanParam;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.QueryParam;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 @Aspect
 public class FormSubmitValidInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(FormSubmitValidInterceptor.class);
-    private static final String pointCupExpression = "execution(@FormValid * *(..))";
+    private static final String pointCupExpression = "execution(@com.rabbitframework.web.annotations.FormValid * *(..))";
 
     @Pointcut(pointCupExpression)
     public void formAnnotatedMethod() {
@@ -22,80 +35,60 @@ public class FormSubmitValidInterceptor {
     @Around("formAnnotatedMethod()")
     public Object doInterceptor(ProceedingJoinPoint pjp) throws Throwable {
         Object[] args = pjp.getArgs();
-
-//        if (args.length == 0) {//参数为空则不拦截
-//            return pjp.proceed();
-//        }
-//        DataJsonResponse mustResult = mustValidate(pjp, args[0]);
-//        //必填参数为空则返回;
-//        if (null != mustResult) {
-//            String result = mustResult.toJson();
-//            logger.warn("valid:" + result);
-//            return ResponseUtils.ok(result);
-//        }
-//
+        if (args.length == 0) {//参数为空则不拦截
+            return pjp.proceed();
+        }
+        MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
+        Method method = methodSignature.getMethod();
+        FormValid formValid = method.getAnnotation(FormValid.class);
+        String fieldFilter = formValid.fieldFilter();
+        Map<String, Object> paramsValue = new HashMap<String, Object>();
+        Parameter[] parameters = method.getParameters();
+        Object value = null;
+        int parameterLength = parameters.length;
+        for (int i = 0; i < parameterLength; i++) {
+            Parameter parameter = parameters[i];
+            Annotation[] annotations = parameter.getAnnotations();
+            if (annotations.length == 0) {
+                continue;
+            }
+            String name = getAnnotationName(parameter, annotations);
+            if (StringUtils.isBlank(name)) {
+                continue;
+            }
+            value = args[i];
+            break;
+        }
+        
 //        DataJsonResponse hibernateValidResult = hibernateValidate(args[0]);
 //        if (null != hibernateValidResult) {
 //            String result = hibernateValidResult.toJson();
-//            logger.warn("valid:" + result);
 //            return ResponseUtils.ok(result);
 //        }
-
-
         return pjp.proceed();
-
     }
 
-    /**
-     * 验证参数是否包含了必须的值,作为hibernate validate的补充
-     *
-     * @param pjp
-     * @param object
-     * @return
-     */
-    private DataJsonResponse mustValidate(ProceedingJoinPoint pjp, Object object) {
-        DataJsonResponse response = null;
-
-//        if (object == null) {
-//            return response;
-//        }
-//
-//        Method method = AopUtils.getMethod(pjp);
-//        String mustParametersValue = null;
-//        if (method != null && method.isAnnotationPresent(MustParameters.class)) {
-//            MustParameters mustParameters = method.getAnnotation(MustParameters.class);
-//            mustParametersValue = mustParameters.value();
-//        }
-//
-//        if (StringUtils.isBlank(mustParametersValue)) {
-//            return response;
-//        }
-//
-//        Map<String, String> data = new HashMap<String, String>();
-//        //获取注解中所有要求不为空的项
-//        String[] mastArgs = mustParametersValue.split(",");
-//        for (String string : mastArgs) {
-//            Field field = ReflectionUtils.findField(object.getClass(), string);
-//            if (field == null) {
-//                continue;
+    private String getAnnotationName(Parameter parameter, Annotation[] annotations) {
+        int annotationsLength = annotations.length;
+        String name = null;
+        for (int i = 0; i < annotationsLength; i++) {
+            Annotation annotation = annotations[i];
+            if (annotation instanceof BeanParam) {
+                name = parameter.getType().getSimpleName().toLowerCase(Locale.ENGLISH);
+                break;
+            }
+//            if (annotation instanceof FormParam) {
+//                FormParam formParam = (FormParam) annotation;
+//                name = formParam.value();
+//                break;
 //            }
-//            String fieldName = field.getName();
-//            field.setAccessible(true);
-//            Object fieldVal = ReflectionUtils.getField(field, object);
-//            //如果该字段为空则直接返回false
-//            if (null == fieldVal) {
-//                data.put(fieldName, ServletContextHelper.getMessage(fieldName + ".null"));
+//            if (annotation instanceof QueryParam) {
+//                QueryParam formParam = (QueryParam) annotation;
+//                name = formParam.value();
+//                break;
 //            }
-//        }
-//
-//        if (data.size() > 0) {
-//            response = new DataJsonResponse();
-//            response.setData(data);
-//            response.setStatus(DataJsonResponse.SC_VALID_ERROR);
-//            response.setMessage(ServletContextHelper.getMessage("fail"));
-//        }
-
-        return response;
+        }
+        return name;
     }
 
     /**
