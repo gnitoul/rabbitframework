@@ -1,6 +1,7 @@
 package com.rabbitframework.web.utils;
 
 import com.rabbitframework.commons.utils.StatusCode;
+import com.rabbitframework.commons.utils.StringUtils;
 import com.rabbitframework.web.DataJsonResponse;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -22,35 +23,39 @@ public class ValidationUtils {
 
     private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-    public static <T> DataJsonResponse validateEntity(T obj) {
-        DataJsonResponse result = null;
+    public static <T> List<FieldError> validateEntity(T obj, String fieldFilter) {
+        List<FieldError> fieldErrors = new ArrayList<FieldError>();
         Set<ConstraintViolation<T>> set = validator.validate(obj, Default.class);
         if (CollectionUtils.isEmpty(set)) {
-            return result;
+            return fieldErrors;
         }
-        result = new DataJsonResponse();
-        result.setStatus(StatusCode.SC_VALID_ERROR);
-        result.setMessage(ServletContextHelper.getMessage("fail"));
-        List<FieldError> fieldErrors = getFiledErrors(set);
-        result.setData(fieldErrors);
-        return result;
+        fieldErrors = getFiledErrors(set, fieldFilter);
+        return fieldErrors;
     }
 
-    private static <T> List<FieldError> getFiledErrors(Set<ConstraintViolation<T>> set) {
+    private static <T> List<FieldError> getFiledErrors(Set<ConstraintViolation<T>> set, String fieldFilter) {
         List<FieldError> fieldErrors = new ArrayList<FieldError>();
         for (ConstraintViolation<T> cv : set) {
-            FieldError fieldError = new FieldError();
             String fieldName = cv.getPropertyPath().toString();
-            String message = cv.getMessage();
-            if (message.indexOf("{") != -1 && message.lastIndexOf("}") != -1) {
-                message = message.substring(message.indexOf("{") + 1, message.lastIndexOf("}"));
+            if (StringUtils.contains(fieldFilter, fieldName)) {
+                continue;
             }
-
-            fieldError.setFieldName(fieldName);
-            fieldError.setErrorMessage(ServletContextHelper.getMessage(message));
+            String message = cv.getMessage();
+            FieldError fieldError = getFieldError(fieldName, message);
             fieldErrors.add(fieldError);
         }
         return fieldErrors;
+    }
+
+    public static FieldError getFieldError(String fieldName, String message) {
+        FieldError fieldError = new FieldError();
+        if (message.indexOf("{") != -1 && message.lastIndexOf("}") != -1) {
+            message = message.substring(message.indexOf("{") + 1, message.lastIndexOf("}"));
+        }
+
+        fieldError.setFieldName(fieldName);
+        fieldError.setErrorMessage(ServletContextHelper.getMessage(message));
+        return fieldError;
     }
 
     public static <T> DataJsonResponse validateProperty(T obj, String propertyName) {
