@@ -15,24 +15,29 @@
  */
 package com.rabbitframework.web.resources;
 
+import com.rabbitframework.web.exceptions.ExceptionMapperSupport;
+import com.rabbitframework.web.filter.XSSFilter;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 
 /**
- * 默认注册spring {@link RequestContextFilter}
+ * 默认注册spring {@link RequestContextFilter}配置和异常配置{@link ExceptionMapperSupport}
+ * 以及xss过虑器{@link com.rabbitframework.web.filter.XSSFilter}
  * 在web.xml配置servlet或Filter后，init-param中需要加上如下代码：
  * <pre>
  *   &lt;init-param&gt;
  *    &lt;param-name&gt; javax.ws.rs.Application &lt;/param-name&gt;
- *     &lt;param-value&gt; com.rabbitframework.web.resources.SpringRegisterApplicationConfig &lt;/param-value&gt;
+ *     &lt;param-value&gt; com.rabbitframework.web.resources.DefaultApplicationConfig &lt;/param-value&gt;
  *   &lt;/init-param&gt;
  * </pre>
  *
  * @author: justin
  * @date: 2017-07-30 下午11:52
  */
-public class SpringRegisterApplicationConfig extends ApplicationConfig {
-    public SpringRegisterApplicationConfig() {
+public class DefaultApplicationConfig extends ApplicationConfig {
+    public DefaultApplicationConfig() {
         super();
         register(RequestContextFilter.class);
+        register(ExceptionMapperSupport.class);
+        register(XSSFilter.class);
     }
 }

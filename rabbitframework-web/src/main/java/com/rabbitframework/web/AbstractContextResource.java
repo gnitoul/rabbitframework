@@ -1,7 +1,6 @@
 package com.rabbitframework.web;
 
-import com.rabbitframework.commons.utils.JsonUtils;
-import com.rabbitframework.commons.utils.StringUtils;
+import com.rabbitframework.commons.utils.StatusCode;
 import com.rabbitframework.web.resources.RabbitContextResource;
 import com.rabbitframework.web.utils.ResponseUtils;
 import com.rabbitframework.web.utils.ServletContextHelper;
@@ -16,8 +15,7 @@ import javax.ws.rs.core.Response;
  *
  * @author: justin.liang
  */
-public abstract class AbstractContextResource
-        extends RabbitContextResource {
+public abstract class AbstractContextResource extends RabbitContextResource {
     private static final Logger logger = LoggerFactory.getLogger(AbstractContextResource.class);
 
     public String getMessage(String messageKey) {
@@ -45,10 +43,10 @@ public abstract class AbstractContextResource
         if (data != null) {
             dataJsonResponse.setData(data);
         }
-        dataJsonResponse.setStatus(DataJsonResponse.FAIL);
+        dataJsonResponse.setStatus(StatusCode.FAIL);
         dataJsonResponse.setMessage(getMessage("fail"));
         if (result) {
-            dataJsonResponse.setStatus(DataJsonResponse.SC_OK);
+            dataJsonResponse.setStatus(StatusCode.SC_OK);
             dataJsonResponse.setMessage(getMessage("success"));
         }
         String dataJson = dataJsonResponse.toJson();
@@ -63,7 +61,7 @@ public abstract class AbstractContextResource
     public Response getSimpleResponse(boolean result, String key, Object data) {
         DataJsonResponse dataJsonResponse = new DataJsonResponse();
         if (result) {
-            dataJsonResponse.setStatus(DataJsonResponse.SC_OK);
+            dataJsonResponse.setStatus(StatusCode.SC_OK);
             dataJsonResponse.setMessage(getMessage("success"));
             if (data != null) {
                 dataJsonResponse.setData(key, data);
@@ -72,7 +70,7 @@ public abstract class AbstractContextResource
             logger.debug(getClass().getName() + "=>" + dataJson);
             return ResponseUtils.ok(dataJson);
         }
-        dataJsonResponse.setStatus(DataJsonResponse.FAIL);
+        dataJsonResponse.setStatus(StatusCode.FAIL);
         dataJsonResponse.setMessage(getMessage("fail"));
         String dataJson = dataJsonResponse.toJsonNoNull();
         logger.debug(getClass().getName() + "=>" + dataJson);
@@ -90,10 +88,10 @@ public abstract class AbstractContextResource
      */
     public Response getResponse(boolean result, Object data, boolean dateNotNull) {
         DataJsonResponse dataJsonResponse = new DataJsonResponse();
-        dataJsonResponse.setStatus(DataJsonResponse.FAIL);
+        dataJsonResponse.setStatus(StatusCode.FAIL);
         dataJsonResponse.setMessage(getMessage("fail"));
         if (result) {
-            dataJsonResponse.setStatus(DataJsonResponse.SC_OK);
+            dataJsonResponse.setStatus(StatusCode.SC_OK);
             dataJsonResponse.setMessage(getMessage("success"));
         }
         if (null != data) {
@@ -108,7 +106,7 @@ public abstract class AbstractContextResource
     }
 
     public Response getResponse(boolean status, String message, Object data) {
-        int statusInt = status ? DataJsonResponse.SC_OK : DataJsonResponse.FAIL;
+        int statusInt = status ? StatusCode.SC_OK : StatusCode.FAIL;
         return getResponse(statusInt, message, data);
     }
 
@@ -139,48 +137,4 @@ public abstract class AbstractContextResource
         logger.debug(getClass().getName() + "=>" + value);
         return ResponseUtils.ok(value);
     }
-
-    /**
-     * 1:app,2:PC,3:wx
-     *
-     * @param request
-     * @return
-     */
-    public Integer getOperatorSource(HttpServletRequest request) {
-        RequestHeaderInfo requestHeaderInfo = getHeaderInfo(request);
-        //如果为空默认返回
-        if (null == requestHeaderInfo) {
-            return 2; //PC端
-        }
-        return requestHeaderInfo.getOperationSource();
-    }
-
-    public RequestHeaderInfo getHeaderInfo(HttpServletRequest request) {
-        String requestHeaderInfoJson = request.getHeader("twdrpUserAgent");
-        if (StringUtils.isBlank(requestHeaderInfoJson)) {
-            return null;
-        }
-        RequestHeaderInfo requestHeaderInfo = JsonUtils.getObject(requestHeaderInfoJson, RequestHeaderInfo.class);
-        return requestHeaderInfo;
-    }
-
-    /**
-     * 参数验证结果
-     *
-     * @param result
-     * @param messageKey
-     * @return
-     */
-    public Response getArgumentResponse(boolean result, String messageKey) {
-        DataJsonResponse dataJsonResponse = new DataJsonResponse();
-        if (result) {
-            dataJsonResponse.setStatus(DataJsonResponse.SC_OK);
-            dataJsonResponse.setMessage(getMessage("success"));
-            return ResponseUtils.ok(dataJsonResponse.toJsonNoNull());
-        }
-        dataJsonResponse.setStatus(DataJsonResponse.SC_VALID_ERROR);
-        dataJsonResponse.setMessage(getMessage(messageKey));
-        return ResponseUtils.ok(dataJsonResponse.toJsonNoNull());
-    }
-
 }

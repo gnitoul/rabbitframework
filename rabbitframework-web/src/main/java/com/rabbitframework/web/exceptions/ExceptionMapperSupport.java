@@ -1,19 +1,33 @@
 package com.rabbitframework.web.exceptions;
 
+import com.rabbitframework.commons.exceptions.RabbitFrameworkException;
+import com.rabbitframework.commons.exceptions.UnKnowException;
+import com.rabbitframework.commons.utils.JsonUtils;
+import com.rabbitframework.commons.utils.StatusCode;
+import com.rabbitframework.web.DataJsonResponse;
+import com.rabbitframework.web.utils.ResponseUtils;
+import com.rabbitframework.web.utils.ServletContextHelper;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * 统一异常处理
  *
  * @author justin.liang
  */
-//@Provider
+@Provider
 public class ExceptionMapperSupport implements ExceptionMapper<Exception> {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionMapperSupport.class);
     @Context
@@ -22,58 +36,50 @@ public class ExceptionMapperSupport implements ExceptionMapper<Exception> {
     @Override
     public Response toResponse(Exception e) {
         logger.error(e.getMessage(), e);
-        return null;
-//        int httpStatus = HttpServletResponse.SC_OK;
-//        DataJsonResponse dataJsonResponse = new DataJsonResponse();
-//        Exception currException = e;
-//        if (e instanceof WebApplicationException) {
-//            WebApplicationException webException = ((WebApplicationException) e);
-//            Response response = webException.getResponse();
-//            int status = response.getStatus();
-//            String message = webException.getMessage();
-//            PrintWriter printWriter = null;
-//            try {
-//                Writer writer = new StringWriter();
-//                printWriter = new PrintWriter(writer);
-//                webException.printStackTrace(printWriter);
-//                message = writer.toString();
-//            } finally {
-//                IOUtils.closeQuietly(printWriter);
-//            }
-//            dataJsonResponse.setStatus(FAIL);
-//            dataJsonResponse.setMessage(message);
-//            ResponseUtils.getResponse(status, JsonUtils.toJsonString(dataJsonResponse));
-//        }
-//
-//        if (!(e instanceof TwdrpException)) {
-//            currException = new UnknowException(e.getMessage(), e);
-//        }
-//
-//        TwdrpException twdrpException = (TwdrpException) currException;
-//        String message = ServletContextHelper.getMessage(twdrpException.getMessage());
-//        dataJsonResponse.setMessage(message);
-//        int status = twdrpException.getStatus();
-//        int resultStatus = status;
-//        switch (status) {
-//            case FAIL:
-//                resultStatus = DataJsonResponse.FAIL;
-//                break;
-//            case SC_VALID_ERROR:
-//                resultStatus = DataJsonResponse.SC_VALID_ERROR;
-//                break;
-//            case SC_CACHE_ERROR:
-//                resultStatus = SC_CACHE_ERROR;
-//                break;
-//            case SC_INTERNAL_SERVER_ERROR:
-//                httpStatus = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-//                break;
-//            case SC_UNAUTHORIZED:
-//            case SC_PROXY_AUTHENTICATION_REQUIRED:
-//                httpStatus = HttpServletResponse.SC_UNAUTHORIZED;
-//                break;
-//        }
-//        dataJsonResponse.setStatus(resultStatus);
-//        dataJsonResponse.setMessage(message);
-//        return ResponseUtils.getResponse(httpStatus, dataJsonResponse.toJson());
+        int httpStatus = HttpServletResponse.SC_OK;
+        DataJsonResponse dataJsonResponse = new DataJsonResponse();
+        Exception currException = e;
+        if (e instanceof WebApplicationException) {
+            WebApplicationException webException = ((WebApplicationException) e);
+            Response response = webException.getResponse();
+            int status = response.getStatus();
+            String message = webException.getMessage();
+            PrintWriter printWriter = null;
+            try {
+                Writer writer = new StringWriter();
+                printWriter = new PrintWriter(writer);
+                webException.printStackTrace(printWriter);
+                message = writer.toString();
+            } finally {
+                IOUtils.closeQuietly(printWriter);
+            }
+            dataJsonResponse.setStatus(StatusCode.FAIL);
+            dataJsonResponse.setMessage(message);
+            return ResponseUtils.getResponse(status, JsonUtils.toJsonString(dataJsonResponse));
+        }
+
+        if (!(e instanceof RabbitFrameworkException)) {
+            currException = new UnKnowException(e.getMessage(), e);
+        }
+
+        RabbitFrameworkException rException = (RabbitFrameworkException) currException;
+        String message = ServletContextHelper.getMessage(rException.getMessage());
+        dataJsonResponse.setMessage(message);
+        int status = rException.getStatus();
+        int resultStatus = status;
+        switch (status) {
+            case StatusCode.SC_INTERNAL_SERVER_ERROR:
+                httpStatus = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                break;
+            case StatusCode.SC_UNAUTHORIZED:
+                httpStatus = HttpServletResponse.SC_UNAUTHORIZED;
+                break;
+            case StatusCode.SC_PROXY_AUTHENTICATION_REQUIRED:
+                httpStatus = HttpServletResponse.SC_PROXY_AUTHENTICATION_REQUIRED;
+                break;
+        }
+        dataJsonResponse.setStatus(resultStatus);
+        dataJsonResponse.setMessage(message);
+        return ResponseUtils.getResponse(httpStatus, dataJsonResponse.toJson());
     }
 }
